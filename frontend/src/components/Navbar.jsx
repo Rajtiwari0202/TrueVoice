@@ -1,10 +1,11 @@
 import React from 'react';
-import { Mic, Activity, Zap, FileSearch, ShieldAlert, BarChart2, BookOpen, Radio, Lock } from 'lucide-react';
+import { Mic, Activity, Zap, FileSearch, ShieldAlert, BarChart2, BookOpen, Radio, Lock, Wifi } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, isConnected, stats }) {
   const tabs = [
     { id: 'overview', label: 'Whitepaper & Specs', icon: BookOpen },
     { id: 'console', label: 'Live Voice Shield', icon: Mic },
+    { id: 'codecs', label: 'Codec Robustness', icon: Wifi },
     { id: 'simulator', label: 'Attack Simulator', icon: Zap },
     { id: 'banking', label: 'CXO & Banking Guard', icon: Lock },
     { id: 'forensics', label: 'WhatsApp Forensics', icon: FileSearch },

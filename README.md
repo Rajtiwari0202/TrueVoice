@@ -78,7 +78,7 @@ Attacker Scrapes Audio ──► Neural Latent Diffusion ──► HiFi-GAN Voco
                                                  ▼
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ TIER 2: LOW-LATENCY DSP ACOUSTIC PHYSICS & GLOTTAL INVERSE FILTERING (< 8 ms)                   │
-│ • 40-Channel Linear Frequency Cepstral Coefficients (LFCC) across 0-8 kHz                      │
+│ • 40-Channel Linear Frequency Cepstral Coefficients (LFCC) across 0-8 kHz                       │
 │ • High-Frequency Phase Group Delay Derivative: τ_g(ω) = -d/dω[arg(X(ω))]                        │
 │ • Glottal IAIF: Separates vocal tract resonance from raw glottal airflow pulses                 │
 │ • Breath Aspiration Turbulence & Pulse Asymmetry Analysis                                       │
@@ -88,8 +88,8 @@ Attacker Scrapes Audio ──► Neural Latent Diffusion ──► HiFi-GAN Voco
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │ TIER 3: MULTI-GRANULARITY ATTENTION & SCALABLE AASIST NEURAL BACKBONE (< 15 ms)                 │
 │ • Global Time-Frequency Attention (GTFA): Squeeze-and-Excitation over frequency & time axes     │
-│ • Local Time-Frequency Attention (LTFA): Multi-scale windows k ∈ {3, 5, 7, 9}                  │
-│   - k=3 (95ms): Phoneme-level anomalies       - k=7 (222ms): Syllabic structures               │
+│ • Local Time-Frequency Attention (LTFA): Multi-scale windows k ∈ {3, 5, 7, 9}                   │
+│   - k=3 (95ms): Phoneme-level anomalies       - k=7 (222ms): Syllabic structures                │
 │   - k=5 (159ms): Formant transitions          - k=9 (286ms): Word transitions                   │
 │ • Adaptive Fusion Module (AFM): Softmax channel-wise weighting under lossy codecs               │
 │ • Scalable AASIST: Multi-Head Self-Attention (MHA) + Trainable Soft Fusion + SincNet            │
@@ -100,7 +100,7 @@ Attacker Scrapes Audio ──► Neural Latent Diffusion ──► HiFi-GAN Voco
 │ TIER 4: BIOLOGICAL MICRO-TREMOR & ROLLING BAYESIAN DECISION FUSION (< 5 ms)                     │
 │ • Vectorized YIN Pitch Tracker (F0 Extraction)                                                  │
 │ • Butterworth 4th-Order Bandpass Filter (8–12 Hz) to isolate Laryngeal Micro-Tremor (LMT)       │
-│ • Physiological Humanity Score: Var(LMT) > 0.12 Hz (Living Human) vs < 0.015 Hz (AI TTS)       │
+│ • Physiological Humanity Score: Var(LMT) > 0.12 Hz (Living Human) vs < 0.015 Hz (AI TTS)        │
 │ • Multi-Chunk Rolling Bayesian Confidence Smoothing                                             │
 │ • ASVspoof 5 minDCF Cost Index Calculation (π_spf=0.05, C_fa=10, C_miss=1)                      │
 └────────────────────────────────────────────────┬────────────────────────────────────────────────┘

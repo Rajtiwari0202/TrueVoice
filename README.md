@@ -1,7 +1,6 @@
 # 🎙️ TrueVoice: Sovereign Real-Time AI Voice Clone & Neural Speech Defense Engine
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![SIH2026](https://img.shields.io/badge/SIH_2026-SIH26104-orange.svg)](https://www.sih.gov.in/sih2026PS)
 [![Streaming Latency](https://img.shields.io/badge/Streaming_Latency-%3C_30ms-brightgreen.svg)]()
 [![Model Accuracy](https://img.shields.io/badge/Anti--Spoofing_Accuracy-95.0%25-success.svg)]()
 [![Equal Error Rate](https://img.shields.io/badge/ASVspoof5_EER-0.98%25-blueviolet.svg)]()
@@ -9,8 +8,7 @@
 [![100% Pure Software](https://img.shields.io/badge/Deployment-100%25_Pure_Software-purple.svg)]()
 
 > **The Sovereign Real-Time Voice Authenticity Engine.**  
-> Engineered for **Smart India Hackathon 2026 Problem Statement `SIH26104`**  
-> *Sponsoring Authority:* **AICTE Cyber Security Cell // Ministry of Communications // Ministry of Home Affairs (MHA)**
+> Built for zero-latency detection and interception of neural speech deepfakes, zero-shot voice clones, and audio impersonation attacks across real-time communication channels.
 
 ---
 
@@ -31,7 +29,7 @@
 7. [Research Bibliography & Citations](#-research-bibliography--citations)
 8. [Installation & Quickstart Guide](#-installation--quickstart-guide)
 9. [API & WebSocket Protocol Specification](#-api--websocket-protocol-specification)
-10. [SIH 2026 Jury Pitch & Impact](#-sih-2026-jury-pitch--impact)
+10. [License & Intellectual Property](#-license--intellectual-property)
 
 ---
 
@@ -39,11 +37,11 @@
 
 Generative Voice Cloning (Zero-Shot Neural Speech Synthesis via tools like *ElevenLabs, Coqui XTTS v2, VALL-E, OpenVoice, BigVGAN*) can clone any individual’s vocal timbre from as little as **3 seconds of reference audio**. 
 
-In India, this technology has powered an epidemic of **"Digital Arrest" extortion calls, CXO wire fraud, and WhatsApp voice note impersonations**, resulting in over **₹1,200 Crores in financial theft** in 2025–2026. Human auditory perception is ineffective, achieving an accuracy of only **54%** (essentially random chance) in detecting modern neural voice clones.
+In real-world communication systems, this technology powers high-damage **extortion calls, CXO wire transfer fraud, and WhatsApp/VoIP voice note impersonations**, resulting in billions in financial losses. Human auditory perception is ineffective, achieving an accuracy of only **54%** (essentially random chance) in detecting modern neural voice clones.
 
 ```
 Attacker Scrapes Audio ──► Neural Latent Diffusion ──► HiFi-GAN Vocoder ──► VoIP / Call Scam ──► Victim Defrauded
-(Instagram / YouTube)       (Zero-Shot Acoustic)       (Phase Upsampling)     ("Digital Arrest")    (₹50L Wire Lost)
+(Social Media / Video)      (Zero-Shot Acoustic)       (Phase Upsampling)     ("Emergency Wire")    (Funds Transferred)
 ```
 
 **TrueVoice** is a sub-30ms, pure-software real-time voice defense engine. Instead of merely analyzing how speech sounds, TrueVoice inspects the **underlying acoustic physics and biological human invariants**—such as the presence of living neuromuscular vocal cord tremors and mathematical vocoder phase artifacts—to intercept zero-day voice clones in real-time during live phone calls.
@@ -178,7 +176,7 @@ $$\delta_{\text{LMT}}(t) = \text{Butterworth}_{4\text{th}}[8\text{ Hz} - 12\text
 │                                    3 REAL-WORLD PRODUCT MODALITIES                              │
 ├─────────────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                                 │
-│  [MODE A: WebRTC / Mobile Live Call Shield] (Frontline CXO & Citizen Protection)                │
+│  [MODE A: WebRTC / Mobile Live Call Shield] (Frontline CXO & User Protection)                   │
 │  • Intercepts microphone/speaker PCM via Web Audio API / AudioWorklet in 500ms chunks.          │
 │  • Displays a floating real-time "Voice Integrity Meter" directly on the live call interface.   │
 │                                                                                                 │
@@ -186,7 +184,7 @@ $$\delta_{\text{LMT}}(t) = \text{Butterworth}_{4\text{th}}[8\text{ Hz} - 12\text
 │  • Integrates with Asterisk / FreeSWITCH via RTP AudioSocket.                                   │
 │  • Passively analyzes calls; automatically triggers core banking fund transfer freezes.         │
 │                                                                                                 │
-│  [MODE C: WhatsApp / Telegram Forensic Studio] (Law Enforcement & Evidence Analysis)           │
+│  [MODE C: WhatsApp / Telegram Forensic Studio] (Investigation & Evidence Analysis)              │
 │  • Ingests .ogg, .m4a, .wav, and .mp3 voice recordings.                                        │
 │  • Generates tamper-evident forensic certificates with spectral heatmaps for court evidence.    │
 │                                                                                                 │
@@ -310,14 +308,22 @@ npm run dev
 
 ---
 
-## 🏆 SIH 2026 Jury Pitch & Impact
-
-### 30-Second Elevator Pitch
-> *"Judges, in the last year, thousands of Indian citizens have fallen prey to 'Digital Arrest' scams and CEO impersonations because AI can clone voices in 3 seconds. Current tools only analyze audio after the call is over.*
-> 
-> *We built **TrueVoice**—the sovereign real-time voice truth layer that inspects the **physics and living biology of the vocal tract** in under **30 milliseconds**. Because living humans have involuntary vocal micro-tremors (8–12 Hz) that no AI model can fake, TrueVoice halts synthetic voice attacks live during the call before financial damage occurs."*
-
----
-
 ## 📜 License & Intellectual Property
-Licensed under the **Apache License 2.0**. Developed as a sovereign cybersecurity asset for **SIH 2026**.
+
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
+
+```
+Copyright 2026 TrueVoice Authors & Contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```

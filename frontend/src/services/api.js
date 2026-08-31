@@ -28,6 +28,20 @@ export const api = {
     return res.json();
   },
 
+  async analyzeChunk(audioB64, clientId = "web_caller", callContext = "LIVE_MIC_STREAM") {
+    const res = await fetch(`${API_BASE}/api/voice/analyze-chunk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        audio_b64: audioB64,
+        client_id: clientId,
+        call_context: callContext
+      })
+    });
+    if (!res.ok) throw new Error('Chunk analysis failed');
+    return res.json();
+  },
+
   async analyzeFile(file) {
     const formData = new FormData();
     formData.append('file', file);
@@ -42,7 +56,7 @@ export const api = {
 
 /**
  * Captures live microphone audio using Web Audio API, downsamples to 16kHz Float32 PCM,
- * and streams 500ms chunks via WebSocket.
+ * and streams 500ms chunks with sub-50ms latency.
  */
 export class LiveVoiceStreamer {
   constructor(onEvaluation, onStatusChange) {
@@ -50,10 +64,10 @@ export class LiveVoiceStreamer {
     this.onStatusChange = onStatusChange;
     this.audioContext = null;
     this.mediaStream = null;
-    this.socket = null;
     this.isStreaming = false;
     this.buffer = [];
     this.targetSampleRate = 16000;
+    this.isProcessingChunk = false;
   }
 
   async start() {
@@ -62,51 +76,26 @@ export class LiveVoiceStreamer {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const source = this.audioContext.createMediaStreamSource(this.mediaStream);
       
-      // ScriptProcessor for real-time PCM chunk extraction
       const processor = this.audioContext.createScriptProcessor(4096, 1, 1);
-      
-      // Connect WebSocket
-      this.socket = new WebSocket(`${WS_BASE}/ws/voice-stream`);
-      
-      this.socket.onopen = () => {
-        this.isStreaming = true;
-        if (this.onStatusChange) this.onStatusChange({ connected: true, streaming: true });
-      };
+      this.isStreaming = true;
 
-      this.socket.onmessage = (event) => {
-        try {
-          const payload = JSON.parse(event.data);
-          if (payload.type === 'EVALUATION_EVENT' && this.onEvaluation) {
-            this.onEvaluation(payload.data);
-          }
-        } catch (e) {
-          console.error("WS Parse error", e);
-        }
-      };
+      if (this.onStatusChange) this.onStatusChange({ connected: true, streaming: true });
 
-      this.socket.onclose = () => {
-        this.isStreaming = false;
-        if (this.onStatusChange) this.onStatusChange({ connected: false, streaming: false });
-      };
-
-      processor.onaudioprocess = (e) => {
-        if (!this.isStreaming || this.socket?.readyState !== WebSocket.OPEN) return;
+      processor.onaudioprocess = async (e) => {
+        if (!this.isStreaming) return;
         const inputData = e.inputBuffer.getChannelData(0);
         
-        // Downsample input to 16kHz
         const downsampled = this._downsampleBuffer(inputData, this.audioContext.sampleRate, this.targetSampleRate);
         for (let i = 0; i < downsampled.length; i++) {
           this.buffer.push(downsampled[i]);
         }
 
-        // When buffer reaches 500ms (8000 samples at 16kHz)
-        const CHUNK_SIZE = 8000;
-        if (this.buffer.length >= CHUNK_SIZE) {
+        const CHUNK_SIZE = 8000; // 500ms at 16kHz
+        if (this.buffer.length >= CHUNK_SIZE && !this.isProcessingChunk) {
+          this.isProcessingChunk = true;
           const chunk = new Float32Array(this.buffer.slice(0, CHUNK_SIZE));
-          // Slide forward with 50% overlap (4000 samples)
-          this.buffer = this.buffer.slice(4000);
+          this.buffer = this.buffer.slice(4000); // 50% overlap
 
-          // Convert Float32Array to Base64
           const uint8 = new Uint8Array(chunk.buffer);
           let binary = '';
           const len = uint8.byteLength;
@@ -115,10 +104,16 @@ export class LiveVoiceStreamer {
           }
           const b64 = btoa(binary);
 
-          this.socket.send(JSON.stringify({
-            type: 'AUDIO_CHUNK',
-            audio_b64: b64
-          }));
+          try {
+            const evalResult = await api.analyzeChunk(b64, "live_microphone", "LIVE_CALL_WEBRTC");
+            if (this.onEvaluation && this.isStreaming) {
+              this.onEvaluation(evalResult);
+            }
+          } catch (err) {
+            console.error("Chunk transmission error:", err);
+          } finally {
+            this.isProcessingChunk = false;
+          }
         }
       };
 
@@ -140,19 +135,12 @@ export class LiveVoiceStreamer {
     if (this.audioContext) {
       this.audioContext.close();
     }
-    if (this.socket) {
-      this.socket.close();
-    }
     if (this.onStatusChange) this.onStatusChange({ connected: false, streaming: false });
   }
 
   _downsampleBuffer(buffer, sampleRate, outSampleRate) {
-    if (outSampleRate === sampleRate) {
-      return buffer;
-    }
-    if (outSampleRate > sampleRate) {
-      return buffer;
-    }
+    if (outSampleRate === sampleRate) return buffer;
+    if (outSampleRate > sampleRate) return buffer;
     const sampleRateRatio = sampleRate / outSampleRate;
     const newLength = Math.round(buffer.length / sampleRateRatio);
     const result = new Float32Array(newLength);

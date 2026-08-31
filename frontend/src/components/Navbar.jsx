@@ -1,15 +1,16 @@
 import React from 'react';
-import { Mic, Activity, Zap, FileSearch, ShieldAlert, BarChart2, BookOpen, Radio, Lock, Wifi } from 'lucide-react';
+import { Mic, Activity, Zap, FileSearch, ShieldAlert, BarChart2, BookOpen, Radio, Lock, Wifi, Eye } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab, isConnected, stats }) {
   const tabs = [
-    { id: 'overview', label: 'Whitepaper & Specs', icon: BookOpen },
+    { id: 'inspector', label: 'How It Works (X-Ray)', icon: Eye },
     { id: 'console', label: 'Live Voice Shield', icon: Mic },
     { id: 'codecs', label: 'Codec Robustness', icon: Wifi },
     { id: 'simulator', label: 'Attack Simulator', icon: Zap },
     { id: 'banking', label: 'CXO & Banking Guard', icon: Lock },
     { id: 'forensics', label: 'WhatsApp Forensics', icon: FileSearch },
-    { id: 'telemetry', label: 'Benchmark Telemetry', icon: BarChart2 }
+    { id: 'telemetry', label: 'Benchmark Telemetry', icon: BarChart2 },
+    { id: 'overview', label: 'Whitepaper & Specs', icon: BookOpen }
   ];
 
   return (
@@ -19,7 +20,7 @@ export default function Navbar({ activeTab, setActiveTab, isConnected, stats }) 
           
           {/* Logo & Node Identifier */}
           <div 
-            onClick={() => setActiveTab('overview')}
+            onClick={() => setActiveTab('inspector')}
             className="flex items-center space-x-3 cursor-pointer group"
           >
             <div className="w-8 h-8 rounded bg-[#1A1E26] border border-[#2F3646] flex items-center justify-center text-[#FF5500] shadow-inner group-hover:border-[#FF5500]/60 transition-colors">
@@ -41,7 +42,7 @@ export default function Navbar({ activeTab, setActiveTab, isConnected, stats }) 
           </div>
 
           {/* Segmented Mechanical Navigation */}
-          <nav className="hidden lg:flex items-center p-1 bg-[#12151B] rounded border border-[#232730]">
+          <nav className="hidden xl:flex items-center p-1 bg-[#12151B] rounded border border-[#232730]">
             {tabs.map((t) => {
               const Icon = t.icon;
               const isActive = activeTab === t.id;
@@ -49,7 +50,7 @@ export default function Navbar({ activeTab, setActiveTab, isConnected, stats }) 
                 <button
                   key={t.id}
                   onClick={() => setActiveTab(t.id)}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all ${
+                  className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded text-xs font-medium transition-all ${
                     isActive
                       ? 'bg-[#FF5500] text-white font-semibold shadow-sm'
                       : 'text-[#8C93A3] hover:text-[#F2F4F8] hover:bg-[#1A1E27]'

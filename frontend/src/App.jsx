@@ -7,11 +7,13 @@ import AudioForensicStudio from './components/AudioForensicStudio';
 import CodecRobustnessStudio from './components/CodecRobustnessStudio';
 import BenchmarkTelemetry from './components/BenchmarkTelemetry';
 import TechnicalWhitepaper from './components/TechnicalWhitepaper';
+import InteractiveArchitectureInspector from './components/InteractiveArchitectureInspector';
 import { api } from './services/api';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('console');
+  const [activeTab, setActiveTab] = useState('inspector');
   const [isConnected, setIsConnected] = useState(false);
+  const [latestEvaluation, setLatestEvaluation] = useState(null);
   const [stats, setStats] = useState({
     total_chunks_processed: 0,
     clones_intercepted: 0,
@@ -36,6 +38,7 @@ export default function App() {
   }, []);
 
   const handleEvaluationUpdate = (evalResult) => {
+    setLatestEvaluation(evalResult);
     fetchHealth();
   };
 
@@ -51,13 +54,30 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {activeTab === 'overview' && <TechnicalWhitepaper />}
-        {activeTab === 'console' && <VoiceConsole onStreamEvaluation={handleEvaluationUpdate} />}
-        {activeTab === 'codecs' && <CodecRobustnessStudio onCodecEvaluated={handleEvaluationUpdate} />}
-        {activeTab === 'simulator' && <AttackSimulator onAttackEvaluated={handleEvaluationUpdate} />}
-        {activeTab === 'banking' && <BankingFraudInterceptor onBankingEvaluated={handleEvaluationUpdate} />}
-        {activeTab === 'forensics' && <AudioForensicStudio onForensicEvaluated={handleEvaluationUpdate} />}
-        {activeTab === 'telemetry' && <BenchmarkTelemetry />}
+        {activeTab === 'inspector' && (
+          <InteractiveArchitectureInspector latestEvaluation={latestEvaluation} />
+        )}
+        {activeTab === 'console' && (
+          <VoiceConsole onStreamEvaluation={handleEvaluationUpdate} />
+        )}
+        {activeTab === 'codecs' && (
+          <CodecRobustnessStudio onCodecEvaluated={handleEvaluationUpdate} />
+        )}
+        {activeTab === 'simulator' && (
+          <AttackSimulator onAttackEvaluated={handleEvaluationUpdate} />
+        )}
+        {activeTab === 'banking' && (
+          <BankingFraudInterceptor onBankingEvaluated={handleEvaluationUpdate} />
+        )}
+        {activeTab === 'forensics' && (
+          <AudioForensicStudio onForensicEvaluated={handleEvaluationUpdate} />
+        )}
+        {activeTab === 'telemetry' && (
+          <BenchmarkTelemetry />
+        )}
+        {activeTab === 'overview' && (
+          <TechnicalWhitepaper />
+        )}
       </main>
 
       {/* Sovereign Bottom Status Bar */}

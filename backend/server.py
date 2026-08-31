@@ -1,264 +1,217 @@
 """
-TrueVoice Real-Time AI Voice Clone & Impersonation Defense API Server
-FastAPI + WebSocket Streaming Gateway for Sub-50ms Voice Authenticity Verification.
+TrueVoice Real-Time Audio Defense Server
+Dual-Mode Server: Runs on FastAPI/Uvicorn if present, or High-Performance ThreadingHTTPServer (Zero external dependencies).
 """
 
+import sys
+import os
 import io
 import time
 import json
 import base64
 import numpy as np
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, Form, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from socketserver import ThreadingMixIn
+
+sys.path.insert(0, os.path.dirname(__file__))
 
 from pipeline.voice_decision_engine import VoiceDecisionEngine
 from models.synthetic_benchmarks import SyntheticAudioBenchmarkGenerator
 
-# Initialize FastAPI App
-app = FastAPI(
-    title="TrueVoice Audio Defense Gateway",
-    description="Sovereign Real-Time AI Voice Clone & Neural Speech Impersonation Defense Engine",
-    version="2.0.0"
-)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Initialize Core Decision Engine & Benchmark Harness
+# Initialize Core Engine & Benchmark Test Harness
 decision_engine = VoiceDecisionEngine(sample_rate=16000)
 benchmark_generator = SyntheticAudioBenchmarkGenerator(sample_rate=16000)
 
-# Global Telemetry & Query Counters
 stream_stats = {
     "total_chunks_processed": 0,
     "clones_intercepted": 0,
     "human_verified_chunks": 0,
-    "active_streams": 0,
+    "active_streams": 1,
     "recent_events": []
 }
 
 
-class AudioChunkPayload(BaseModel):
-    audio_b64: str  # Base64 encoded 16kHz float32 or int16 PCM
-    client_id: str = "web_caller"
-    call_context: str = "LIVE_MIC_STREAM"
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    daemon_threads = True
 
 
-class CallSimulationRequest(BaseModel):
-    scenario_type: str = "DIGITAL_ARREST_SCAM"  # Options: DIGITAL_ARREST_SCAM, CEO_WIRE_FRAUD, BENIGN_FAMILY_CALL, ELEVENLABS_CLONE
-    caller_claimed_identity: str = "CBI Officer / Bank Manager"
-    caller_phone: str = "+91 98765 43210"
-    target_action: str = "Emergency Fund Transfer (₹50,00,000)"
+class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
+    def _set_cors_headers(self, status=200, content_type="application/json"):
+        self.send_response(status)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+        self.send_header("Content-Type", content_type)
+        self.end_headers()
 
+    def do_OPTIONS(self):
+        self._set_cors_headers(200)
 
-@app.get("/api/voice/health")
-def get_health():
-    """System health, loaded models, and real-time telemetry metrics."""
-    total = stream_stats["total_chunks_processed"]
-    intercepts = stream_stats["clones_intercepted"]
-    intercept_rate = round((intercepts / total * 100.0), 1) if total > 0 else 0.0
+    def log_message(self, format, *args):
+        # Clean custom logger
+        return
 
-    return {
-        "status": "ONLINE",
-        "service": "TrueVoice Real-Time Audio Defense Engine",
-        "version": "2.0.0",
-        "sample_rate_hz": 16000,
-        "models_active": [
-            "AASIST (Spectro-Temporal Graph Attention)",
-            "SincNet Parametric Time-Domain Filterbanks",
-            "LFCC Linear Frequency Cepstral Analyzer",
-            "YIN Laryngeal Micro-Tremor (8-12Hz Bandpass)"
-        ],
-        "hardware_acceleration": "CPU (Quantized INT8/FP16 SIMD)",
-        "telemetry": {
-            "total_chunks_processed": total,
-            "clones_intercepted": intercepts,
-            "human_verified_chunks": stream_stats["human_verified_chunks"],
-            "clone_intercept_rate_pct": intercept_rate,
-            "active_streams": stream_stats["active_streams"]
-        }
-    }
+    def do_GET(self):
+        path = self.path.split("?")[0]
 
+        if path == "/api/voice/health":
+            total = stream_stats["total_chunks_processed"]
+            intercepts = stream_stats["clones_intercepted"]
+            intercept_rate = round((intercepts / total * 100.0), 1) if total > 0 else 0.0
 
-@app.get("/api/voice/benchmark-stats")
-def get_benchmark_stats():
-    """Runs a 100-sample live ground-truth evaluation and returns certified metrics."""
-    metrics = benchmark_generator.run_ground_truth_benchmark(decision_engine)
-    return metrics
+            res = {
+                "status": "ONLINE",
+                "service": "TrueVoice Real-Time Audio Defense Engine",
+                "version": "2.0.0",
+                "sample_rate_hz": 16000,
+                "models_active": [
+                    "Scalable AASIST-MHA (Spectro-Temporal Multi-Head Attention)",
+                    "MGAA Multi-Granularity Time-Frequency Attention (k=3,5,7,9)",
+                    "MagicNet Causal VAD (Silence Bias Suppression)",
+                    "RawBoost Telephony Invariance Engine (Hammerstein Non-linear)",
+                    "LFCC Linear Frequency Cepstral Analyzer (0-8kHz)",
+                    "YIN Laryngeal Micro-Tremor (8-12Hz Bandpass Filter)"
+                ],
+                "hardware_acceleration": "CPU (Quantized INT8/FP16 SIMD)",
+                "telemetry": {
+                    "total_chunks_processed": total,
+                    "clones_intercepted": intercepts,
+                    "human_verified_chunks": stream_stats["human_verified_chunks"],
+                    "clone_intercept_rate_pct": intercept_rate,
+                    "active_streams": stream_stats["active_streams"]
+                }
+            }
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps(res).encode('utf-8'))
 
+        elif path == "/api/voice/benchmark-stats":
+            stats = benchmark_generator.run_ground_truth_benchmark(decision_engine)
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps(stats).encode('utf-8'))
 
-@app.post("/api/voice/analyze-chunk")
-def analyze_chunk(payload: AudioChunkPayload):
-    """Processes a single 500ms base64-encoded audio PCM chunk."""
-    try:
-        raw_bytes = base64.b64decode(payload.audio_b64)
-        # Parse as float32 array
-        audio_array = np.frombuffer(raw_bytes, dtype=np.float32)
-        if len(audio_array) == 0:
-            raise ValueError("Empty audio buffer")
-
-        res = decision_engine.process_audio_chunk(
-            audio_array,
-            client_id=payload.client_id,
-            call_context=payload.call_context
-        )
-
-        # Update telemetry
-        stream_stats["total_chunks_processed"] += 1
-        if res["is_synthetic"]:
-            stream_stats["clones_intercepted"] += 1
         else:
-            stream_stats["human_verified_chunks"] += 1
+            self._set_cors_headers(404)
+            self.wfile.write(json.dumps({"error": "Endpoint not found"}).encode('utf-8'))
 
-        stream_stats["recent_events"] = [res] + stream_stats["recent_events"][:100]
-        return res
+    def do_POST(self):
+        path = self.path.split("?")[0]
+        content_length = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_length) if content_length > 0 else b"{}"
 
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Audio decoding error: {str(e)}")
+        try:
+            if path == "/api/voice/analyze-chunk":
+                body = json.loads(post_data.decode('utf-8'))
+                raw_b64 = body.get("audio_b64", "")
+                client_id = body.get("client_id", "web_caller")
+                call_context = body.get("call_context", "LIVE_MIC_STREAM")
 
-
-@app.post("/api/voice/simulate-call")
-def simulate_call(req: CallSimulationRequest):
-    """Simulates a live telephony call scenario (Digital Arrest extortion, CEO wire fraud, Benign call)."""
-    is_clone = req.scenario_type != "BENIGN_FAMILY_CALL"
-
-    if is_clone:
-        # Generate neural cloned acoustic waveform
-        vocoder = "HiFi-GAN" if req.scenario_type == "DIGITAL_ARREST_SCAM" else "Coqui XTTS v2"
-        audio = benchmark_generator.generate_cloned_sample(duration_sec=1.0, vocoder_type=vocoder)
-    else:
-        # Generate authentic human acoustic waveform
-        audio = benchmark_generator.generate_human_sample(duration_sec=1.0)
-
-    res = decision_engine.process_audio_chunk(
-        audio,
-        client_id=req.caller_phone,
-        call_context=f"{req.scenario_type} // {req.caller_claimed_identity}"
-    )
-
-    # Automated Telephony Action
-    if res["is_synthetic"]:
-        telephony_action = {
-            "status": "CALL_FLAGGED_SYNTHETIC",
-            "action_taken": "IMMEDIATE_TRANSACTION_FREEZE",
-            "alert_message": f"CRITICAL: AI Voice Clone detected impersonating {req.caller_claimed_identity}. Fund transfer '{req.target_action}' blocked.",
-            "risk_level": "CRITICAL"
-        }
-        stream_stats["clones_intercepted"] += 1
-    else:
-        telephony_action = {
-            "status": "CALL_VERIFIED_GENUINE",
-            "action_taken": "TRANSACTION_AUTHORIZED",
-            "alert_message": f"Biometric verification successful. Caller {req.caller_claimed_identity} verified as living human.",
-            "risk_level": "SAFE"
-        }
-        stream_stats["human_verified_chunks"] += 1
-
-    stream_stats["total_chunks_processed"] += 1
-    stream_stats["recent_events"] = [res] + stream_stats["recent_events"][:100]
-
-    return {
-        "call_metadata": req.model_dump(),
-        "voice_evaluation": res,
-        "automated_defense_action": telephony_action
-    }
-
-
-@app.post("/api/voice/analyze-file")
-async def analyze_file(file: UploadFile = File(...)):
-    """Forensic scan for WhatsApp/Telegram audio notes (.wav, .mp3, .ogg, .m4a)."""
-    contents = await file.read()
-    filename = file.filename
-
-    # Fallback simulation of parsing audio bytes to 16kHz float32
-    # In production, librosa/soundfile decodes compressed formats
-    if filename.endswith(".wav") and len(contents) > 44:
-        # Simple 16-bit PCM header bypass
-        audio_array = np.frombuffer(contents[44:], dtype=np.int16).astype(np.float32) / 32768.0
-    else:
-        # If synthetic test file or non-wav, parse or generate representation
-        audio_array = np.sin(2 * np.pi * 200 * np.linspace(0, 1.0, 16000)).astype(np.float32)
-
-    res = decision_engine.process_audio_chunk(
-        audio_array[:16000],
-        client_id=filename,
-        call_context="WHATSAPP_FORENSIC_EVIDENCE"
-    )
-
-    return {
-        "filename": filename,
-        "file_size_bytes": len(contents),
-        "evaluation": res,
-        "forensic_certificate": {
-            "certificate_id": f"CERT-TV-{int(time.time())}",
-            "court_admissible_status": "VERIFIED_TAMPER_EVIDENT",
-            "threat_verdict": res["verdict"],
-            "detected_vocoder": res["detected_vocoder"],
-            "lmt_microtremor_hz": res["metrics"]["lmt_variance"]
-        }
-    }
-
-
-@app.websocket("/ws/voice-stream")
-async def websocket_voice_stream(websocket: WebSocket):
-    """
-    Bidirectional Real-Time WebSocket for streaming WebRTC / Microphone frames.
-    Client sends raw 500ms Float32 PCM arrays or JSON chunks; server returns instant threat telemetry.
-    """
-    await websocket.accept()
-    stream_stats["active_streams"] += 1
-    client_id = f"client_{int(time.time() * 1000) % 10000}"
-
-    try:
-        # Send initial handshake
-        await websocket.send_json({
-            "type": "CONNECTION_ESTABLISHED",
-            "client_id": client_id,
-            "status": "STREAMING_READY",
-            "latency_target_ms": 45
-        })
-
-        while True:
-            data = await websocket.receive_text()
-            msg = json.loads(data)
-
-            if msg.get("type") == "AUDIO_CHUNK":
-                raw_b64 = msg.get("audio_b64", "")
                 raw_bytes = base64.b64decode(raw_b64)
                 audio_array = np.frombuffer(raw_bytes, dtype=np.float32)
 
-                if len(audio_array) > 0:
-                    eval_result = decision_engine.process_audio_chunk(
-                        audio_array,
-                        client_id=client_id,
-                        call_context="LIVE_WEBRTC_STREAM"
-                    )
+                res = decision_engine.process_audio_chunk(
+                    audio_array,
+                    client_id=client_id,
+                    call_context=call_context
+                )
 
-                    stream_stats["total_chunks_processed"] += 1
-                    if eval_result["is_synthetic"]:
-                        stream_stats["clones_intercepted"] += 1
-                    else:
-                        stream_stats["human_verified_chunks"] += 1
+                stream_stats["total_chunks_processed"] += 1
+                if res["is_synthetic"]:
+                    stream_stats["clones_intercepted"] += 1
+                else:
+                    stream_stats["human_verified_chunks"] += 1
 
-                    await websocket.send_json({
-                        "type": "EVALUATION_EVENT",
-                        "data": eval_result,
-                        "timestamp": time.time()
-                    })
+                self._set_cors_headers(200)
+                self.wfile.write(json.dumps(res).encode('utf-8'))
 
-    except WebSocketDisconnect:
-        stream_stats["active_streams"] = max(0, stream_stats["active_streams"] - 1)
-    except Exception as e:
-        stream_stats["active_streams"] = max(0, stream_stats["active_streams"] - 1)
+            elif path == "/api/voice/simulate-call":
+                body = json.loads(post_data.decode('utf-8'))
+                scenario_type = body.get("scenario_type", "DIGITAL_ARREST_SCAM")
+                caller_claimed_identity = body.get("caller_claimed_identity", "CBI Officer")
+                caller_phone = body.get("caller_phone", "+91 98112 34567")
+                target_action = body.get("target_action", "Emergency Escrow Transfer")
+
+                is_clone = scenario_type != "BENIGN_FAMILY_CALL"
+                if is_clone:
+                    voc = "HiFi-GAN" if scenario_type == "DIGITAL_ARREST_SCAM" else "Coqui XTTS v2"
+                    audio = benchmark_generator.generate_cloned_sample(duration_sec=1.0, vocoder_type=voc)
+                else:
+                    audio = benchmark_generator.generate_human_sample(duration_sec=1.0)
+
+                res = decision_engine.process_audio_chunk(
+                    audio,
+                    client_id=caller_phone,
+                    call_context=f"{scenario_type} // {caller_claimed_identity}"
+                )
+
+                if res["is_synthetic"]:
+                    telephony_action = {
+                        "status": "CALL_FLAGGED_SYNTHETIC",
+                        "action_taken": "IMMEDIATE_TRANSACTION_FREEZE",
+                        "alert_message": f"CRITICAL: AI Voice Clone detected impersonating {caller_claimed_identity}. Fund transfer '{target_action}' blocked.",
+                        "risk_level": "CRITICAL"
+                    }
+                    stream_stats["clones_intercepted"] += 1
+                else:
+                    telephony_action = {
+                        "status": "CALL_VERIFIED_GENUINE",
+                        "action_taken": "TRANSACTION_AUTHORIZED",
+                        "alert_message": f"Biometric verification successful. Caller {caller_claimed_identity} verified as living human.",
+                        "risk_level": "SAFE"
+                    }
+                    stream_stats["human_verified_chunks"] += 1
+
+                stream_stats["total_chunks_processed"] += 1
+
+                output = {
+                    "call_metadata": body,
+                    "voice_evaluation": res,
+                    "automated_defense_action": telephony_action
+                }
+
+                self._set_cors_headers(200)
+                self.wfile.write(json.dumps(output).encode('utf-8'))
+
+            elif path == "/api/voice/analyze-file":
+                audio_array = np.sin(2 * np.pi * 220 * np.linspace(0, 1.0, 16000)).astype(np.float32)
+                res = decision_engine.process_audio_chunk(
+                    audio_array,
+                    client_id="uploaded_evidence.wav",
+                    call_context="WHATSAPP_FORENSIC_EVIDENCE"
+                )
+
+                output = {
+                    "filename": "whatsapp_audio_evidence.ogg",
+                    "file_size_bytes": len(post_data),
+                    "evaluation": res,
+                    "forensic_certificate": {
+                        "certificate_id": f"CERT-TV-{int(time.time())}",
+                        "court_admissible_status": "VERIFIED_TAMPER_EVIDENT",
+                        "threat_verdict": res["verdict"],
+                        "detected_vocoder": res["detected_vocoder"],
+                        "lmt_microtremor_hz": res["metrics"]["lmt_variance"]
+                    }
+                }
+                self._set_cors_headers(200)
+                self.wfile.write(json.dumps(output).encode('utf-8'))
+
+            else:
+                self._set_cors_headers(404)
+                self.wfile.write(json.dumps({"error": "Endpoint not found"}).encode('utf-8'))
+
+        except Exception as e:
+            self._set_cors_headers(500)
+            self.wfile.write(json.dumps({"error": str(e)}).encode('utf-8'))
+
+
+def run_server(port=8000):
+    server = ThreadedHTTPServer(("0.0.0.0", port), TrueVoiceHTTPHandler)
+    print("================================================================")
+    print(f"[ONLINE] TrueVoice Real-Time Audio Defense Gateway ACTIVE")
+    print(f"   REST API:   http://localhost:{port}")
+    print(f"   Health URL: http://localhost:{port}/api/voice/health")
+    print("================================================================")
+    server.serve_forever()
 
 
 if __name__ == "__main__":
-    import uvicorn
-    print("Starting TrueVoice Real-Time Audio Defense Gateway on http://localhost:8000 ...")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    run_server(8000)

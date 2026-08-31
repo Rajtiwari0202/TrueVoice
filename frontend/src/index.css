@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#0A0C10] text-[#F2F4F8] font-sans antialiased;
+    background-color: #0A0C10;
+  }
+}
+
+/* Telemetry Coordinate Grid Backdrop */
+.telemetry-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Tactical Corner Tick-Marks */
+.tactical-corner {
+  position: relative;
+}
+.tactical-corner::before,
+.tactical-corner::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-color: #FF5500;
+  pointer-events: none;
+}
+.tactical-corner::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1.5px solid #FF5500;
+  border-left: 1.5px solid #FF5500;
+}
+.tactical-corner::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1.5px solid #FF5500;
+  border-right: 1.5px solid #FF5500;
+}
+
+/* Mechanical Card Panels */
+.card-panel {
+  background: #111318;
+  border: 1px solid #232730;
+  border-radius: 4px;
+}
+
+.card-panel-interactive {
+  background: #111318;
+  border: 1px solid #232730;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+.card-panel-interactive:hover {
+  background: #15181F;
+  border-color: #3B4252;
+}
+
+/* Buttons */
+.btn-primary {
+  @apply inline-flex items-center justify-center space-x-2 px-4 py-2 rounded bg-[#FF5500] hover:bg-[#E64A00] text-white font-mono font-bold text-xs tracking-wider transition shadow-sm active:translate-y-[0.5px];
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center space-x-2 px-3.5 py-2 rounded bg-[#161921] hover:bg-[#1E222D] text-[#E2E6EE] border border-[#2B313E] hover:border-[#3D4557] font-mono font-bold text-xs transition shadow-sm active:translate-y-[0.5px];
+}
+
+.btn-danger {
+  @apply inline-flex items-center justify-center space-x-2 px-4 py-2 rounded bg-[#FF3B30] hover:bg-[#D93025] text-white font-mono font-bold text-xs tracking-wider transition shadow-sm active:translate-y-[0.5px];
+}
+
+.btn-success {
+  @apply inline-flex items-center justify-center space-x-2 px-4 py-2 rounded bg-[#00E599] hover:bg-[#00C782] text-[#0A0C10] font-mono font-bold text-xs tracking-wider transition shadow-sm active:translate-y-[0.5px];
+}
+
+/* Badges */
+.badge-cadmium {
+  @apply bg-[#FF5500]/10 text-[#FF5500] border border-[#FF5500]/30;
+}
+.badge-emerald {
+  @apply bg-[#00E599]/10 text-[#00E599] border border-[#00E599]/30;
+}
+.badge-rose {
+  @apply bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/30;
+}
+.badge-steel {
+  @apply bg-[#1E222D] text-[#C7CBD4] border border-[#2F3646];
+}
+
+/* Inputs */
+.input-clean {
+  @apply bg-[#0B0D11] border border-[#282E3A] rounded px-3 py-2 text-xs font-mono text-[#F2F4F8] placeholder-[#5A6275] focus:outline-none focus:border-[#FF5500] transition;
+}

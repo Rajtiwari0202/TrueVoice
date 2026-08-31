@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Audio / Models (Large binary weights)
+*.pth
+*.onnx.large
+*.wav
+*.mp3
+*.ogg
+*.m4a
+!sample_audio/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

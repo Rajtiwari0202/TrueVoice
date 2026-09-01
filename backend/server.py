@@ -54,7 +54,27 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         path = self.path.split("?")[0]
 
-        if path == "/api/voice/health":
+        # Root Endpoint / Welcome Page
+        if path == "/" or path == "/api":
+            res = {
+                "name": "TrueVoice Real-Time Audio Defense Gateway",
+                "status": "ONLINE",
+                "version": "2.0.0",
+                "problem_statement": "SIH26104 (AICTE Cyber Security Cell / Ministry of Communications)",
+                "mission_console_url": "http://localhost:5174",
+                "endpoints": {
+                    "health": "/api/voice/health",
+                    "benchmark_stats": "/api/voice/benchmark-stats",
+                    "analyze_chunk_post": "/api/voice/analyze-chunk",
+                    "simulate_call_post": "/api/voice/simulate-call",
+                    "analyze_file_post": "/api/voice/analyze-file"
+                },
+                "documentation": "https://github.com/Rajtiwari0202/TrueVoice"
+            }
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps(res, indent=2).encode('utf-8'))
+
+        elif path == "/api/voice/health":
             total = stream_stats["total_chunks_processed"]
             intercepts = stream_stats["clones_intercepted"]
             intercept_rate = round((intercepts / total * 100.0), 1) if total > 0 else 0.0
@@ -91,7 +111,10 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
 
         else:
             self._set_cors_headers(404)
-            self.wfile.write(json.dumps({"error": "Endpoint not found"}).encode('utf-8'))
+            self.wfile.write(json.dumps({
+                "error": "Endpoint not found", 
+                "hint": "Try visiting '/' or '/api/voice/health'"
+            }).encode('utf-8'))
 
     def do_POST(self):
         path = self.path.split("?")[0]

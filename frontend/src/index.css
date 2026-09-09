@@ -4,17 +4,31 @@
 
 @layer base {
   body {
-    @apply bg-[#0A0C10] text-[#F2F4F8] font-sans antialiased;
-    background-color: #0A0C10;
+    @apply bg-[#07090E] text-[#F2F4F8] font-sans antialiased selection:bg-[#FF5500] selection:text-white;
+    background-color: #07090E;
+    color: #F2F4F8;
   }
 }
 
-/* Telemetry Coordinate Grid Backdrop */
+/* Telemetry Vector Grid Backdrop */
 .telemetry-grid {
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: 32px 32px;
+}
+
+/* Subtle Glowing Accents */
+.glow-cadmium {
+  box-shadow: 0 0 25px -5px rgba(255, 85, 0, 0.35);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 25px -5px rgba(0, 229, 153, 0.35);
+}
+
+.glow-rose {
+  box-shadow: 0 0 25px -5px rgba(255, 59, 48, 0.35);
 }
 
 /* Tactical Corner Tick-Marks */
@@ -25,8 +39,8 @@
 .tactical-corner::after {
   content: '';
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-color: #FF5500;
   pointer-events: none;
 }
@@ -43,39 +57,46 @@
   border-right: 1.5px solid #FF5500;
 }
 
-/* Mechanical Card Panels */
+/* Tactical Card Panels */
 .card-panel {
-  background: #111318;
-  border: 1px solid #232730;
-  border-radius: 4px;
+  background: #0E1117;
+  border: 1px solid #1E232E;
+  border-radius: 6px;
+}
+
+.card-panel-elevated {
+  background: #121620;
+  border: 1px solid #28303F;
+  border-radius: 6px;
 }
 
 .card-panel-interactive {
-  background: #111318;
-  border: 1px solid #232730;
-  border-radius: 4px;
-  transition: all 0.15s ease;
+  background: #0E1117;
+  border: 1px solid #1E232E;
+  border-radius: 6px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .card-panel-interactive:hover {
-  background: #15181F;
-  border-color: #3B4252;
+  background: #141822;
+  border-color: #384257;
+  transform: translateY(-1px);
 }
 
 /* Buttons */
 .btn-primary {
-  @apply inline-flex items-center justify-center space-x-2 px-4 py-2 rounded bg-[#FF5500] hover:bg-[#E64A00] text-white font-mono font-bold text-xs tracking-wider transition shadow-sm active:translate-y-[0.5px];
+  @apply inline-flex items-center justify-center space-x-2 px-4 py-2.5 rounded bg-[#FF5500] hover:bg-[#E64A00] text-white font-mono font-bold text-xs tracking-wider transition-all duration-150 shadow-sm active:translate-y-[1px] hover:shadow-[0_0_15px_rgba(255,85,0,0.4)];
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center space-x-2 px-3.5 py-2 rounded bg-[#161921] hover:bg-[#1E222D] text-[#E2E6EE] border border-[#2B313E] hover:border-[#3D4557] font-mono font-bold text-xs transition shadow-sm active:translate-y-[0.5px];
+  @apply inline-flex items-center justify-center space-x-2 px-3.5 py-2.5 rounded bg-[#131720] hover:bg-[#1A202C] text-[#E2E6EE] border border-[#252C3B] hover:border-[#3B455A] font-mono font-bold text-xs transition-all duration-150 shadow-sm active:translate-y-[1px];
 }
 
 .btn-danger {
-  @apply inline-flex items-center justify-center space-x-2 px-4 py-2 rounded bg-[#FF3B30] hover:bg-[#D93025] text-white font-mono font-bold text-xs tracking-wider transition shadow-sm active:translate-y-[0.5px];
+  @apply inline-flex items-center justify-center space-x-2 px-4 py-2.5 rounded bg-[#FF3B30] hover:bg-[#D93025] text-white font-mono font-bold text-xs tracking-wider transition-all duration-150 shadow-sm active:translate-y-[1px] hover:shadow-[0_0_15px_rgba(255,59,48,0.4)];
 }
 
 .btn-success {
-  @apply inline-flex items-center justify-center space-x-2 px-4 py-2 rounded bg-[#00E599] hover:bg-[#00C782] text-[#0A0C10] font-mono font-bold text-xs tracking-wider transition shadow-sm active:translate-y-[0.5px];
+  @apply inline-flex items-center justify-center space-x-2 px-4 py-2.5 rounded bg-[#00E599] hover:bg-[#00C782] text-[#0A0C10] font-mono font-bold text-xs tracking-wider transition-all duration-150 shadow-sm active:translate-y-[1px] hover:shadow-[0_0_15px_rgba(0,229,153,0.4)];
 }
 
 /* Badges */
@@ -89,10 +110,26 @@
   @apply bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/30;
 }
 .badge-steel {
-  @apply bg-[#1E222D] text-[#C7CBD4] border border-[#2F3646];
+  @apply bg-[#171C26] text-[#C7CBD4] border border-[#2A3242];
 }
 
 /* Inputs */
 .input-clean {
-  @apply bg-[#0B0D11] border border-[#282E3A] rounded px-3 py-2 text-xs font-mono text-[#F2F4F8] placeholder-[#5A6275] focus:outline-none focus:border-[#FF5500] transition;
+  @apply bg-[#0A0D12] border border-[#232936] rounded px-3 py-2 text-xs font-mono text-[#F2F4F8] placeholder-[#5A6275] focus:outline-none focus:border-[#FF5500] transition;
+}
+
+/* Custom Tactical Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #090B10;
+}
+::-webkit-scrollbar-thumb {
+  background: #232836;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3B4459;
 }

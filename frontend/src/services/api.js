@@ -2,8 +2,8 @@
  * TrueVoice Frontend API & Real-Time Audio Streaming Client
  */
 
-const API_BASE = 'http://localhost:8000';
-const WS_BASE = 'ws://localhost:8000';
+// Same-origin in production (Vercel rewrites /api → backend). Local dev hits backend directly.
+const API_BASE = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
 export const api = {
   async getHealth() {

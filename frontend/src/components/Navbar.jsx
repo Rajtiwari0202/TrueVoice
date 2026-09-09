@@ -1,29 +1,38 @@
-import React from 'react';
-import { Mic, Activity, Zap, FileSearch, ShieldAlert, BarChart2, BookOpen, Radio, Lock, Wifi, Eye } from 'lucide-react';
+import React, { useState } from 'react';
+import { NavLink, Link, useLocation } from 'react-router-dom';
+import { 
+  Mic, Activity, Zap, FileSearch, ShieldAlert, BarChart2, BookOpen, 
+  Lock, Wifi, Eye, Menu, X, ArrowRight, ShieldCheck, Terminal
+} from 'lucide-react';
 
-export default function Navbar({ activeTab, setActiveTab, isConnected, stats }) {
-  const tabs = [
-    { id: 'inspector', label: 'How It Works (X-Ray)', icon: Eye },
-    { id: 'console', label: 'Live Voice Shield', icon: Mic },
-    { id: 'codecs', label: 'Codec Robustness', icon: Wifi },
-    { id: 'simulator', label: 'Attack Simulator', icon: Zap },
-    { id: 'banking', label: 'CXO & Banking Guard', icon: Lock },
-    { id: 'forensics', label: 'WhatsApp Forensics', icon: FileSearch },
-    { id: 'telemetry', label: 'Benchmark Telemetry', icon: BarChart2 },
-    { id: 'overview', label: 'Whitepaper & Specs', icon: BookOpen }
+export default function Navbar({ isConnected, stats }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const navItems = [
+    { to: '/', label: 'Overview', icon: ShieldCheck, exact: true },
+    { to: '/shield', label: 'Live Shield', icon: Mic },
+    { to: '/inspector', label: 'How It Works', icon: Eye },
+    { to: '/codecs', label: 'Codec Studio', icon: Wifi },
+    { to: '/simulator', label: 'Attack Sim', icon: Zap },
+    { to: '/banking', label: 'Banking Guard', icon: Lock },
+    { to: '/forensics', label: 'Forensics', icon: FileSearch },
+    { to: '/telemetry', label: 'Telemetry', icon: BarChart2 },
+    { to: '/specs', label: 'Specs', icon: BookOpen },
   ];
 
   return (
-    <header className="border-b border-[#232730] bg-[#0E1015]/95 backdrop-blur-md sticky top-0 z-50">
+    <header className="border-b border-[#1E232E] bg-[#07090E]/90 backdrop-blur-xl sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
           {/* Logo & Node Identifier */}
-          <div 
-            onClick={() => setActiveTab('inspector')}
-            className="flex items-center space-x-3 cursor-pointer group"
+          <Link 
+            to="/" 
+            className="flex items-center space-x-3 group"
+            onClick={() => setMobileMenuOpen(false)}
           >
-            <div className="w-8 h-8 rounded bg-[#1A1E26] border border-[#2F3646] flex items-center justify-center text-[#FF5500] shadow-inner group-hover:border-[#FF5500]/60 transition-colors">
+            <div className="w-8 h-8 rounded bg-[#131720] border border-[#262D3D] flex items-center justify-center text-[#FF5500] shadow-inner group-hover:border-[#FF5500]/70 group-hover:shadow-[0_0_12px_rgba(255,85,0,0.3)] transition-all">
               <Mic className="w-4 h-4" />
             </div>
             <div>
@@ -31,65 +40,105 @@ export default function Navbar({ activeTab, setActiveTab, isConnected, stats }) 
                 <span className="text-sm font-bold tracking-tight text-[#F2F4F8] uppercase font-mono">
                   True<span className="text-[#FF5500]">Voice</span>
                 </span>
-                <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase bg-[#181C24] text-[#A0A6B5] rounded border border-[#2B313E]">
-                  SIH26104 // AICTE CYBER CELL
+                <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase bg-[#141822] text-[#9EA6B8] rounded border border-[#252C3B]">
+                  SIH26104
                 </span>
               </div>
-              <p className="text-[10px] font-mono text-[#7D8494] leading-none mt-0.5">
-                Real-Time AI Voice Clone &amp; Neural Speech Defense Engine
+              <p className="text-[10px] font-mono text-[#677084] leading-none mt-0.5">
+                AI Voice Clone Defense Engine
               </p>
             </div>
-          </div>
+          </Link>
 
-          {/* Segmented Mechanical Navigation */}
-          <nav className="hidden xl:flex items-center p-1 bg-[#12151B] rounded border border-[#232730]">
-            {tabs.map((t) => {
-              const Icon = t.icon;
-              const isActive = activeTab === t.id;
+          {/* Desktop Navigation Links */}
+          <nav className="hidden xl:flex items-center p-1 bg-[#0E1118] rounded-md border border-[#1E2430]">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = item.exact 
+                ? location.pathname === item.to
+                : location.pathname.startsWith(item.to);
+
               return (
-                <button
-                  key={t.id}
-                  onClick={() => setActiveTab(t.id)}
-                  className={`flex items-center space-x-1.5 px-2.5 py-1.5 rounded text-xs font-medium transition-all ${
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 rounded text-xs font-mono font-medium transition-all ${
                     isActive
-                      ? 'bg-[#FF5500] text-white font-semibold shadow-sm'
-                      : 'text-[#8C93A3] hover:text-[#F2F4F8] hover:bg-[#1A1E27]'
+                      ? 'bg-[#FF5500] text-white font-bold shadow-sm'
+                      : 'text-[#8C93A3] hover:text-[#F2F4F8] hover:bg-[#161B26]'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-[#7D8494]'}`} />
-                  <span>{t.label}</span>
-                </button>
+                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-[#717B8F]'}`} />
+                  <span>{item.label}</span>
+                </NavLink>
               );
             })}
           </nav>
 
-          {/* Real-Time Telemetry Badge */}
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-2 px-2.5 py-1 rounded bg-[#12151B] border border-[#232730] text-xs font-mono">
-              <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-[#00E599] animate-pulse' : 'bg-[#FF5500]'}`} />
-              <span className="text-[#C7CBD4] text-[10.5px]">
-                {isConnected ? 'LIVE WEBRTC DSP ACTIVE' : 'READY TO STREAM'}
+          {/* Real-Time Telemetry & Action Buttons */}
+          <div className="hidden sm:flex items-center space-x-3">
+            <div className="flex items-center space-x-2 px-2.5 py-1 rounded bg-[#0E1118] border border-[#1E2430] text-xs font-mono">
+              <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#00E599] animate-pulse shadow-[0_0_8px_rgba(0,229,153,0.6)]' : 'bg-[#FF5500]'}`} />
+              <span className="text-[#A4ACB9] text-[10.5px]">
+                {isConnected ? 'LIVE 16kHz DSP' : 'CONNECTING...'}
               </span>
             </div>
 
-            <div className="hidden sm:flex items-center space-x-3 pl-3 border-l border-[#232730]">
-              <div className="text-right">
-                <span className="text-[9px] uppercase font-mono text-[#7D8494] block leading-none">Frames</span>
-                <span className="text-xs font-mono font-bold text-[#F2F4F8] mt-0.5 block">
-                  {stats?.total_chunks_processed || 0}
-                </span>
-              </div>
-              <div className="text-right">
-                <span className="text-[9px] uppercase font-mono text-[#7D8494] block leading-none">Intercepts</span>
-                <span className="text-xs font-mono font-bold text-[#FF5500] mt-0.5 block">
-                  {stats?.clones_intercepted || 0}
-                </span>
-              </div>
-            </div>
+            <Link
+              to="/shield"
+              className="btn-primary py-1.5 px-3 text-xs"
+            >
+              <span>MIC SHIELD</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Mobile Menu Toggle Button */}
+          <div className="xl:hidden flex items-center space-x-2">
+            <Link
+              to="/shield"
+              className="btn-primary py-1 px-2.5 text-xs text-[11px]"
+            >
+              SHIELD
+            </Link>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded bg-[#121620] border border-[#232936] text-[#A4ACB9] hover:text-white"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
 
         </div>
       </div>
+
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="xl:hidden border-t border-[#1E2430] bg-[#0A0D14] px-4 pt-3 pb-5 space-y-1 font-mono text-xs">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.exact 
+              ? location.pathname === item.to
+              : location.pathname.startsWith(item.to);
+
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center space-x-2.5 px-3 py-2.5 rounded transition ${
+                  isActive
+                    ? 'bg-[#FF5500] text-white font-bold'
+                    : 'text-[#8C93A3] hover:text-white hover:bg-[#141822]'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </header>
   );
 }

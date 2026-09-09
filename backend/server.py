@@ -1,6 +1,7 @@
 """
 TrueVoice Real-Time Audio Defense Server
 Dual-Mode Server: Runs on FastAPI/Uvicorn if present, or High-Performance ThreadingHTTPServer (Zero external dependencies).
+Supports serving production frontend dist SPA assets and REST APIs simultaneously.
 """
 
 import sys
@@ -9,6 +10,7 @@ import io
 import time
 import json
 import base64
+import mimetypes
 import numpy as np
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
@@ -29,6 +31,11 @@ stream_stats = {
     "active_streams": 1,
     "recent_events": []
 }
+
+# Resolve frontend dist directory
+DIST_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend", "dist"))
+if not os.path.exists(DIST_DIR):
+    DIST_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "dist"))
 
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
@@ -51,11 +58,28 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
         # Clean custom logger
         return
 
+    def _serve_static_file(self, file_path):
+        if not os.path.exists(file_path) or os.path.isdir(file_path):
+            file_path = os.path.join(DIST_DIR, "index.html")
+
+        content_type, _ = mimetypes.guess_type(file_path)
+        if not content_type:
+            content_type = "application/octet-stream"
+
+        try:
+            with open(file_path, "rb") as f:
+                content = f.read()
+            self._set_cors_headers(200, content_type=content_type)
+            self.wfile.write(content)
+        except Exception as e:
+            self._set_cors_headers(500)
+            self.wfile.write(json.dumps({"error": f"Failed to read static asset: {str(e)}"}).encode('utf-8'))
+
     def do_GET(self):
         path = self.path.split("?")[0]
 
-        # Root Endpoint / Welcome Page
-        if path == "/" or path == "/api":
+        # API Routes
+        if path == "/api" or path == "/api/":
             res = {
                 "name": "TrueVoice Real-Time Audio Defense Gateway",
                 "status": "ONLINE",
@@ -109,11 +133,17 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
             self._set_cors_headers(200)
             self.wfile.write(json.dumps(stats).encode('utf-8'))
 
+        # Static SPA Assets Serving (Production / Docker mode)
+        elif os.path.exists(DIST_DIR):
+            safe_rel_path = path.lstrip("/")
+            target_file = os.path.join(DIST_DIR, safe_rel_path)
+            self._serve_static_file(target_file)
+
         else:
             self._set_cors_headers(404)
             self.wfile.write(json.dumps({
                 "error": "Endpoint not found", 
-                "hint": "Try visiting '/' or '/api/voice/health'"
+                "hint": "Try visiting '/api' or '/api/voice/health'"
             }).encode('utf-8'))
 
     def do_POST(self):
@@ -230,8 +260,11 @@ def run_server(port=8000):
     server = ThreadedHTTPServer(("0.0.0.0", port), TrueVoiceHTTPHandler)
     print("================================================================")
     print(f"[ONLINE] TrueVoice Real-Time Audio Defense Gateway ACTIVE")
-    print(f"   REST API:   http://localhost:{port}")
-    print(f"   Health URL: http://localhost:{port}/api/voice/health")
+    print(f"   Unified App: http://localhost:{port}/")
+    print(f"   REST API:    http://localhost:{port}/api")
+    print(f"   Health URL:  http://localhost:{port}/api/voice/health")
+    if os.path.exists(DIST_DIR):
+        print(f"   Static SPA:  Serving from {DIST_DIR}")
     print("================================================================")
     server.serve_forever()
 

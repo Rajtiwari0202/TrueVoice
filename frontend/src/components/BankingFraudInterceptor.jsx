@@ -153,6 +153,72 @@ export default function BankingFraudInterceptor({ onBankingEvaluated }) {
                   </div>
                 </div>
 
+                {/* Biometric ASV & Cross-Session Consistency */}
+                {bankingResult.voice_evaluation?.speaker_verification && (
+                  <div className="p-2.5 rounded bg-[#0B0D11] border border-[#232730]">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[#7D8494] text-[9.5px] font-bold uppercase">
+                        Biometric Voiceprint (Cross-Session ASV)
+                      </span>
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                        bankingResult.voice_evaluation.speaker_verification.mismatch_detected
+                          ? 'bg-[#FF3B30]/20 text-[#FF3B30] border border-[#FF3B30]/40'
+                          : 'bg-[#00E599]/20 text-[#00E599] border border-[#00E599]/40'
+                      }`}>
+                        {bankingResult.voice_evaluation.speaker_verification.cross_session_consistency}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-[11px] text-[#C7CBD4]">
+                      <span>Enrolled Baseline: <strong className="text-white">{bankingResult.voice_evaluation.speaker_verification.claimed_identity}</strong></span>
+                      <span>Cosine Match: <strong className={bankingResult.voice_evaluation.speaker_verification.similarity_score > 0.7 ? "text-[#00E599]" : "text-[#FF3B30]"}>{(bankingResult.voice_evaluation.speaker_verification.similarity_score * 100).toFixed(1)}%</strong></span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Contextual Enrichment Multipliers */}
+                {bankingResult.voice_evaluation?.contextual_enrichment && (
+                  <div className="p-2.5 rounded bg-[#0B0D11] border border-[#232730] text-[11px]">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[#7D8494] text-[9.5px] font-bold uppercase">Contextual Risk Engine</span>
+                      <span className="text-[#FFD000] font-bold">{bankingResult.voice_evaluation.contextual_enrichment.context_risk_multiplier}x Multiplier</span>
+                    </div>
+                    <div className="text-[10px] text-[#A0A6B5] space-y-0.5">
+                      <div>NCRP/I4C Blacklist: <strong className={bankingResult.voice_evaluation.contextual_enrichment.i4c_blacklist_record.includes('FLAGGED') ? 'text-[#FF3B30]' : 'text-[#00E599]'}>{bankingResult.voice_evaluation.contextual_enrichment.i4c_blacklist_record}</strong></div>
+                      <div>Identified Flags: <span className="text-[#E2E6EE]">{bankingResult.voice_evaluation.contextual_enrichment.risk_factors?.join(' • ') || 'None'}</span></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Pre-Transaction Warning Prompt */}
+                {bankingResult.automated_defense_action?.pre_transaction_warning && (
+                  <div className="p-2.5 rounded bg-[#FF5500]/10 border border-[#FF5500]/30 text-xs">
+                    <span className="text-[#FF5500] font-bold text-[10px] uppercase block mb-1">
+                      Pre-Transaction IVR Alert Prompt:
+                    </span>
+                    <p className="text-[11px] text-[#F2F4F8] leading-tight italic">
+                      "{bankingResult.automated_defense_action.pre_transaction_warning.prompt_text}"
+                    </p>
+                    <div className="mt-1.5 flex items-center justify-between text-[9.5px] text-[#A0A6B5]">
+                      <span>Tone: <code className="text-[#FFD000]">{bankingResult.automated_defense_action.pre_transaction_warning.audio_tone_injection}</code></span>
+                      <span>Action: <strong className="text-white">{bankingResult.automated_defense_action.pre_transaction_warning.ivr_recommended_action}</strong></span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Multi-Channel Alerts Dispatched */}
+                {bankingResult.automated_defense_action?.multi_channel_dispatch?.channels_notified && (
+                  <div className="p-2 rounded bg-[#0B0D11] border border-[#232730]">
+                    <span className="text-[#7D8494] text-[9px] font-bold uppercase block mb-1">Dispatched Alert Channels:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {bankingResult.automated_defense_action.multi_channel_dispatch.channels_notified.map((ch, idx) => (
+                        <span key={idx} className="px-1.5 py-0.5 text-[9px] font-mono rounded bg-[#181C24] text-[#00E599] border border-[#2B313E]">
+                          {ch}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="p-2.5 rounded bg-[#0B0D11] border border-[#232730]">
                   <span className="text-[#FF5500] text-[9.5px] font-bold block mb-1">AUDIT RATIONALE:</span>
                   <p className="text-[11px] text-[#A0A6B5] leading-normal">

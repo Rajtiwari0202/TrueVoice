@@ -192,6 +192,92 @@ export default function AttackSimulator({ onAttackEvaluated }) {
             {simulationResult.automated_defense_action.alert_message}
           </div>
 
+          {/* Deep Learning & Biometric ASV Badges */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 font-mono text-xs">
+            {/* Deep Learning */}
+            {simulationResult.voice_evaluation?.deep_learning && (
+              <div className="p-3 rounded bg-[#0B0D11] border border-[#232730]">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[#7D8494] text-[10px] font-bold uppercase">Deep Learning Neural Net</span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#00E599]/20 text-[#00E599] border border-[#00E599]/40">
+                    SincNet + MHA Active
+                  </span>
+                </div>
+                <div className="text-[11px] text-[#C7CBD4] space-y-1">
+                  <div>Model: <strong className="text-white">{simulationResult.voice_evaluation.deep_learning.model_architecture}</strong></div>
+                  <div className="flex justify-between text-[10px] text-[#A0A6B5]">
+                    <span>Params: <strong>{simulationResult.voice_evaluation.deep_learning.parameters_count}</strong></span>
+                    <span>Filters: <strong>{simulationResult.voice_evaluation.deep_learning.sincnet_filters} Sinc filters</strong></span>
+                  </div>
+                  <div className="text-[10px] text-[#A0A6B5]">
+                    Neural Logits: <code className="text-[#FFD000]">[{simulationResult.voice_evaluation.deep_learning.neural_logits?.join(', ')}]</code>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Biometric ASV */}
+            {simulationResult.voice_evaluation?.speaker_verification && (
+              <div className="p-3 rounded bg-[#0B0D11] border border-[#232730]">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[#7D8494] text-[10px] font-bold uppercase">Biometric ASV Consistency</span>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                    simulationResult.voice_evaluation.speaker_verification.mismatch_detected
+                      ? 'bg-[#FF3B30]/20 text-[#FF3B30] border border-[#FF3B30]/40'
+                      : 'bg-[#00E599]/20 text-[#00E599] border border-[#00E599]/40'
+                  }`}>
+                    {simulationResult.voice_evaluation.speaker_verification.cross_session_consistency}
+                  </span>
+                </div>
+                <div className="text-[11px] text-[#C7CBD4] space-y-1">
+                  <div>Claimed: <strong className="text-white">{simulationResult.voice_evaluation.speaker_verification.claimed_identity}</strong></div>
+                  <div className="flex justify-between text-[10px]">
+                    <span className="text-[#A0A6B5]">Voiceprint Match:</span>
+                    <span className={simulationResult.voice_evaluation.speaker_verification.similarity_score > 0.7 ? "text-[#00E599] font-bold" : "text-[#FF3B30] font-bold"}>
+                      {(simulationResult.voice_evaluation.speaker_verification.similarity_score * 100).toFixed(1)}% Cosine
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-[#7D8494]">
+                    Historical enrollment comparison: {simulationResult.voice_evaluation.speaker_verification.is_enrolled_speaker ? 'Profile Matched' : 'Unenrolled Caller'}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Contextual Enrichment & Alerting Layer */}
+          {(simulationResult.voice_evaluation?.contextual_enrichment || simulationResult.automated_defense_action?.pre_transaction_warning) && (
+            <div className="space-y-3 mb-4 font-mono text-xs">
+              {simulationResult.voice_evaluation?.contextual_enrichment && (
+                <div className="p-3 rounded bg-[#0B0D11] border border-[#232730]">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[#7D8494] text-[10px] font-bold uppercase">Contextual Risk Enrichment</span>
+                    <span className="text-[#FFD000] font-bold">{simulationResult.voice_evaluation.contextual_enrichment.context_risk_multiplier}x Multiplier</span>
+                  </div>
+                  <div className="text-[11px] text-[#A0A6B5] flex justify-between">
+                    <span>NCRP / I4C Portal: <strong className={simulationResult.voice_evaluation.contextual_enrichment.i4c_blacklist_record.includes('FLAGGED') ? 'text-[#FF3B30]' : 'text-[#00E599]'}>{simulationResult.voice_evaluation.contextual_enrichment.i4c_blacklist_record}</strong></span>
+                    <span>Origin: <strong className="text-white">{simulationResult.call_metadata?.phone || '+91 98112 34567'}</strong></span>
+                  </div>
+                </div>
+              )}
+
+              {simulationResult.automated_defense_action?.pre_transaction_warning && (
+                <div className="p-3 rounded bg-[#FF5500]/10 border border-[#FF5500]/30 text-xs">
+                  <span className="text-[#FF5500] font-bold text-[10px] uppercase block mb-1">
+                    Pre-Transaction Real-Time Warning Prompt:
+                  </span>
+                  <p className="text-[11px] text-[#F2F4F8] italic leading-tight mb-2">
+                    "{simulationResult.automated_defense_action.pre_transaction_warning.prompt_text}"
+                  </p>
+                  <div className="flex flex-wrap gap-3 text-[10px] text-[#A0A6B5]">
+                    <span>Tone: <strong className="text-[#FFD000]">{simulationResult.automated_defense_action.pre_transaction_warning.audio_tone_injection}</strong></span>
+                    <span>IVR Action: <strong className="text-white">{simulationResult.automated_defense_action.pre_transaction_warning.ivr_recommended_action}</strong></span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* XAI Explanation */}
           <div className="p-3.5 rounded bg-[#0B0D11] border border-[#232730]">
             <span className="text-xs font-mono font-bold text-[#FF5500] block mb-1">

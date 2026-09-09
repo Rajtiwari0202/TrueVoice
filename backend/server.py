@@ -89,8 +89,11 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
                 "endpoints": {
                     "health": "/api/voice/health",
                     "benchmark_stats": "/api/voice/benchmark-stats",
+                    "enrolled_speakers": "/api/voice/enrolled-speakers",
+                    "policies": "/api/voice/policies",
                     "analyze_chunk_post": "/api/voice/analyze-chunk",
                     "simulate_call_post": "/api/voice/simulate-call",
+                    "policy_update_post": "/api/voice/policy/update",
                     "analyze_file_post": "/api/voice/analyze-file"
                 },
                 "documentation": "https://github.com/Rajtiwari0202/TrueVoice"
@@ -109,12 +112,14 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
                 "version": "2.0.0",
                 "sample_rate_hz": 16000,
                 "models_active": [
-                    "Scalable AASIST-MHA (Spectro-Temporal Multi-Head Attention)",
+                    "Scalable AASIST-MHA Deep Learning Neural Network (Viakhirev et al., 2025)",
+                    "Biometric Speaker Verification Engine (192-dim x-vector / ECAPA-TDNN)",
                     "MGAA Multi-Granularity Time-Frequency Attention (k=3,5,7,9)",
                     "MagicNet Causal VAD (Silence Bias Suppression)",
                     "RawBoost Telephony Invariance Engine (Hammerstein Non-linear)",
                     "LFCC Linear Frequency Cepstral Analyzer (0-8kHz)",
-                    "YIN Laryngeal Micro-Tremor (8-12Hz Bandpass Filter)"
+                    "YIN Laryngeal Micro-Tremor (8-12Hz Bandpass Filter)",
+                    "Dynamic Risk Policy & Contextual Enrichment Engine"
                 ],
                 "hardware_acceleration": "CPU (Quantized INT8/FP16 SIMD)",
                 "telemetry": {
@@ -132,6 +137,25 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
             stats = benchmark_generator.run_ground_truth_benchmark(decision_engine)
             self._set_cors_headers(200)
             self.wfile.write(json.dumps(stats).encode('utf-8'))
+
+        elif path == "/api/voice/enrolled-speakers":
+            profiles = decision_engine.speaker_verifier.enrolled_profiles
+            clean_profiles = {
+                k: {
+                    "name": v["name"],
+                    "phone": v["phone"],
+                    "role": v["role"],
+                    "enrolled_at": v["enrolled_at"]
+                }
+                for k, v in profiles.items()
+            }
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps(clean_profiles, indent=2).encode('utf-8'))
+
+        elif path == "/api/voice/policies":
+            policies = decision_engine.policy_manager.list_all_policies()
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps(policies, indent=2).encode('utf-8'))
 
         # Static SPA Assets Serving (Production / Docker mode)
         elif os.path.exists(DIST_DIR):
@@ -157,6 +181,8 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
                 raw_b64 = body.get("audio_b64", "")
                 client_id = body.get("client_id", "web_caller")
                 call_context = body.get("call_context", "LIVE_MIC_STREAM")
+                amount = float(body.get("transaction_amount", 0.0))
+                origin = body.get("call_origin", "DOMESTIC_PSTN")
 
                 raw_bytes = base64.b64decode(raw_b64)
                 audio_array = np.frombuffer(raw_bytes, dtype=np.float32)
@@ -164,7 +190,9 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
                 res = decision_engine.process_audio_chunk(
                     audio_array,
                     client_id=client_id,
-                    call_context=call_context
+                    call_context=call_context,
+                    transaction_amount=amount,
+                    call_origin=origin
                 )
 
                 stream_stats["total_chunks_processed"] += 1
@@ -176,12 +204,27 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
                 self._set_cors_headers(200)
                 self.wfile.write(json.dumps(res).encode('utf-8'))
 
+            elif path == "/api/voice/policy/update":
+                body = json.loads(post_data.decode('utf-8'))
+                scenario_key = body.get("scenario_key", "CRITICAL_BANKING")
+                threshold = float(body.get("threshold", 50.0))
+                cost_fa = body.get("cost_fa")
+                cost_miss = body.get("cost_miss")
+
+                res = decision_engine.policy_manager.update_policy_threshold(
+                    scenario_key, threshold, cost_fa, cost_miss
+                )
+                self._set_cors_headers(200)
+                self.wfile.write(json.dumps(res).encode('utf-8'))
+
             elif path == "/api/voice/simulate-call":
                 body = json.loads(post_data.decode('utf-8'))
                 scenario_type = body.get("scenario_type", "DIGITAL_ARREST_SCAM")
                 caller_claimed_identity = body.get("caller_claimed_identity", "CBI Officer")
                 caller_phone = body.get("caller_phone", "+91 98112 34567")
                 target_action = body.get("target_action", "Emergency Escrow Transfer")
+                amount = float(body.get("transaction_amount", 1500000.0 if "ARREST" in scenario_type else 5000000.0 if "CEO" in scenario_type else 0.0))
+                call_origin = body.get("call_origin", "SIP_PROXY_CAMBODIA" if "ARREST" in scenario_type else "DOMESTIC_PSTN")
 
                 is_clone = scenario_type != "BENIGN_FAMILY_CALL"
                 if is_clone:
@@ -193,32 +236,29 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
                 res = decision_engine.process_audio_chunk(
                     audio,
                     client_id=caller_phone,
-                    call_context=f"{scenario_type} // {caller_claimed_identity}"
+                    call_context=f"{scenario_type} // {caller_claimed_identity}",
+                    transaction_amount=amount,
+                    call_origin=call_origin,
+                    policy_scenario=scenario_type
                 )
 
+                stream_stats["total_chunks_processed"] += 1
                 if res["is_synthetic"]:
-                    telephony_action = {
-                        "status": "CALL_FLAGGED_SYNTHETIC",
-                        "action_taken": "IMMEDIATE_TRANSACTION_FREEZE",
-                        "alert_message": f"CRITICAL: AI Voice Clone detected impersonating {caller_claimed_identity}. Fund transfer '{target_action}' blocked.",
-                        "risk_level": "CRITICAL"
-                    }
                     stream_stats["clones_intercepted"] += 1
                 else:
-                    telephony_action = {
-                        "status": "CALL_VERIFIED_GENUINE",
-                        "action_taken": "TRANSACTION_AUTHORIZED",
-                        "alert_message": f"Biometric verification successful. Caller {caller_claimed_identity} verified as living human.",
-                        "risk_level": "SAFE"
-                    }
                     stream_stats["human_verified_chunks"] += 1
-
-                stream_stats["total_chunks_processed"] += 1
 
                 output = {
                     "call_metadata": body,
                     "voice_evaluation": res,
-                    "automated_defense_action": telephony_action
+                    "automated_defense_action": {
+                        "status": "CALL_FLAGGED_SYNTHETIC" if res["is_synthetic"] else "CALL_VERIFIED_GENUINE",
+                        "action_taken": res["action"],
+                        "channels_alerted": res["alerting_dispatch"]["channels_notified"],
+                        "pre_transaction_warning": res["alerting_dispatch"]["pre_transaction_warning"],
+                        "context_risk": res["contextual_enrichment"],
+                        "speaker_match": res["speaker_verification"]
+                    }
                 }
 
                 self._set_cors_headers(200)

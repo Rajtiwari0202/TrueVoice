@@ -10,6 +10,7 @@ import CodecRobustnessStudio from './components/CodecRobustnessStudio';
 import BenchmarkTelemetry from './components/BenchmarkTelemetry';
 import TechnicalWhitepaper from './components/TechnicalWhitepaper';
 import InteractiveArchitectureInspector from './components/InteractiveArchitectureInspector';
+import ForensicLedger from './components/ForensicLedger';
 import { api } from './services/api';
 
 export default function App() {
@@ -79,6 +80,10 @@ export default function App() {
             <Route 
               path="/banking" 
               element={<BankingFraudInterceptor onBankingEvaluated={handleEvaluationUpdate} />} 
+            />
+            <Route 
+              path="/ledger" 
+              element={<ForensicLedger />} 
             />
             <Route 
               path="/forensics" 

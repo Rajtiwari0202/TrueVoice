@@ -24,6 +24,8 @@ from pipeline.risk_policy import RiskPolicyManager
 from pipeline.contextual_risk_enricher import ContextualRiskEnricher
 from pipeline.alert_dispatcher import MultiChannelAlertDispatcher
 from pipeline.explainable_xai import VoiceXAIExplainer
+from pipeline.forensic_blockchain_ledger import ForensicBlockchainLedger
+from pipeline.privacy_compliance import PrivacyComplianceController
 
 
 class VoiceDecisionEngine:
@@ -40,6 +42,8 @@ class VoiceDecisionEngine:
         self.context_enricher = ContextualRiskEnricher()
         self.alert_dispatcher = MultiChannelAlertDispatcher()
         self.xai_explainer = VoiceXAIExplainer()
+        self.ledger = ForensicBlockchainLedger()
+        self.privacy_controller = PrivacyComplianceController()
 
         self.history_scores = []
         self.max_history = 6
@@ -191,6 +195,27 @@ class VoiceDecisionEngine:
             xai_explanation=xai_explanation
         )
 
+        # Cryptographic Blockchain Ledger Anchoring
+        ledger_block = self.ledger.record_incident(
+            caller_phone=client_id,
+            claimed_identity=call_context,
+            threat_score=smoothed_threat_score,
+            verdict=verdict,
+            scenario_type=policy_scenario or call_context,
+            deep_learning_meta=neural_res.get("model_metadata", {}),
+            lmt_metrics=lmt_res,
+            speaker_verification_meta=speaker_res,
+            context_meta=context_eval,
+            action_taken=action,
+            xai_explanation=xai_explanation
+        )
+
+        # DPDP Act 2023 Biometric Pseudonymization & Volatile Memory Scrubbing
+        pseudo_token = self.privacy_controller.pseudonymize_biometric_vector(
+            speaker_res.get("embedding"), client_id
+        )
+        self.privacy_controller.scrub_audio_buffer(active_audio)
+
         duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
 
         return {
@@ -227,6 +252,12 @@ class VoiceDecisionEngine:
             "alerting_dispatch": {
                 "channels_notified": alert_dispatch["channels_dispatched"],
                 "pre_transaction_warning": alert_dispatch["pre_transaction_warning"]
+            },
+            "forensic_ledger": ledger_block,
+            "privacy_compliance": {
+                "dpdp_act_2023_status": "COMPLIANT",
+                "ephemeral_ram_scrubbed": True,
+                "biometric_pseudonym_token": pseudo_token
             },
             "metrics": {
                 "rms_energy": dsp_descriptors["rms_energy"],

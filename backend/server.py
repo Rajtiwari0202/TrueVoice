@@ -91,6 +91,10 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
                     "benchmark_stats": "/api/voice/benchmark-stats",
                     "enrolled_speakers": "/api/voice/enrolled-speakers",
                     "policies": "/api/voice/policies",
+                    "ledger": "/api/voice/ledger",
+                    "ledger_verify": "/api/voice/ledger/verify",
+                    "certificate": "/api/voice/ledger/certificate",
+                    "privacy_status": "/api/voice/privacy-status",
                     "analyze_chunk_post": "/api/voice/analyze-chunk",
                     "simulate_call_post": "/api/voice/simulate-call",
                     "policy_update_post": "/api/voice/policy/update",
@@ -119,7 +123,9 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
                     "RawBoost Telephony Invariance Engine (Hammerstein Non-linear)",
                     "LFCC Linear Frequency Cepstral Analyzer (0-8kHz)",
                     "YIN Laryngeal Micro-Tremor (8-12Hz Bandpass Filter)",
-                    "Dynamic Risk Policy & Contextual Enrichment Engine"
+                    "Dynamic Risk Policy & Contextual Enrichment Engine",
+                    "Sovereign Forensic Blockchain Ledger (SHA-256 Hash Chain & Sec 65B Certificates)",
+                    "DPDP Act 2023 Ephemeral Privacy Shield (Zero-Retention & Biometric Pseudonymization)"
                 ],
                 "hardware_acceleration": "CPU (Quantized INT8/FP16 SIMD)",
                 "telemetry": {
@@ -156,6 +162,34 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
             policies = decision_engine.policy_manager.list_all_policies()
             self._set_cors_headers(200)
             self.wfile.write(json.dumps(policies, indent=2).encode('utf-8'))
+
+        elif path == "/api/voice/ledger":
+            chain = decision_engine.ledger.get_chain()
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps(chain, indent=2).encode('utf-8'))
+
+        elif path == "/api/voice/ledger/verify":
+            audit = decision_engine.ledger.verify_chain_integrity()
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps(audit, indent=2).encode('utf-8'))
+
+        elif path == "/api/voice/ledger/certificate":
+            query_params = {}
+            if "?" in self.path:
+                q = self.path.split("?")[1]
+                for item in q.split("&"):
+                    if "=" in item:
+                        k, v = item.split("=", 1)
+                        query_params[k] = v
+            incident_id = query_params.get("incident_id", "")
+            cert = decision_engine.ledger.generate_section_65b_certificate(incident_id)
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps(cert, indent=2).encode('utf-8'))
+
+        elif path == "/api/voice/privacy-status":
+            privacy_report = decision_engine.privacy_controller.get_compliance_audit_report()
+            self._set_cors_headers(200)
+            self.wfile.write(json.dumps(privacy_report, indent=2).encode('utf-8'))
 
         # Static SPA Assets Serving (Production / Docker mode)
         elif os.path.exists(DIST_DIR):
@@ -254,8 +288,10 @@ class TrueVoiceHTTPHandler(BaseHTTPRequestHandler):
                     "automated_defense_action": {
                         "status": "CALL_FLAGGED_SYNTHETIC" if res["is_synthetic"] else "CALL_VERIFIED_GENUINE",
                         "action_taken": res["action"],
+                        "alert_message": res["alerting_dispatch"]["pre_transaction_warning"]["prompt_text"] if res["is_synthetic"] else "Organic human voice confirmed. Call passed.",
                         "channels_alerted": res["alerting_dispatch"]["channels_notified"],
                         "pre_transaction_warning": res["alerting_dispatch"]["pre_transaction_warning"],
+                        "forensic_ledger_block": res.get("forensic_ledger"),
                         "context_risk": res["contextual_enrichment"],
                         "speaker_match": res["speaker_verification"]
                     }

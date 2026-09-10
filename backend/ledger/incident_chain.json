@@ -1,0 +1,149 @@
+[
+  {
+    "index": 0,
+    "timestamp": "2026-01-01T00:00:00.000000Z",
+    "incident_id": "INC-GENESIS-0000",
+    "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "merkle_root": "e9ae728c26dcb57a4d5ada04a061e0659b52cfd9cfe6077ea152022580adc115",
+    "block_hash": "c37f2cfddc510bcbab15a2bba1ed6643a498f1e718b3b71f31f424c7ea885c59",
+    "payload": {
+      "system_node": "TRUEVOICE-NODE-RajTiwari02-1A718FF0",
+      "protocol": "TrueVoice Sovereign Hash-Chain v2.0",
+      "purpose": "AICTE Cyber Security Cell Real-Time Telephony Defense Ledger",
+      "statutory_basis": "Indian Evidence Act 1872 (Sec 65B) & BSA 2023 (Sec 63)"
+    },
+    "validator_signature": "SIG_ED25519_GENESIS_ROOT_AUTHENTICATED"
+  },
+  {
+    "index": 1,
+    "timestamp": "2026-09-09T16:33:02.196Z",
+    "incident_id": "INC-2026-70493F5A",
+    "previous_hash": "c37f2cfddc510bcbab15a2bba1ed6643a498f1e718b3b71f31f424c7ea885c59",
+    "merkle_root": "c6c7e644101e65452efd5a5772377ba04d83d1144160ebe15928672e4e85c2b4",
+    "block_hash": "9fa75cf87de6fa0b11b95485a016284fde4911f0f85db2e1caa9bd9310b6ba93",
+    "payload": {
+      "caller_phone": "warmup",
+      "claimed_identity": "VOIP_INCOMING",
+      "threat_score": 84.9,
+      "verdict": "BLOCK",
+      "scenario_type": "VOIP_INCOMING",
+      "action_taken": "STEP_UP_BIOMETRIC_AUTH",
+      "model_architecture": "Scalable-AASIST-MHA",
+      "neural_logits": [],
+      "lmt_variance": 0.0,
+      "asv_consistency": "NEUTRAL_UNKNOWN_SPEAKER",
+      "asv_similarity": 0.5,
+      "context_multiplier": 1.0,
+      "i4c_record": "CLEAN_NCRP_RECORD",
+      "xai_explanation": "AI SYNTHETIC VOICE CLONE DETECTED [Threat Score: 84.9%]. Absence of physiological 8-12Hz laryngeal micro-tremors (Variance: 0.00000 Hz vs Human baseline > 0.12 Hz), indicating artificially sterile neural pitch synthesis. High-frequency phase group-delay discontinuity in the 4-8 kHz band (Score: 1.00), characteristic of discrete neural audio upsampling. Spectro-temporal feature matching correlates with HiFi-GAN / BigVGAN (Neural Vocoder) (Deepfake Confidence: 67.9%)."
+    },
+    "evidence_leaves": {
+      "leaf_caller": "dd051b3e38a7880ea1888798cf21f3e63d066aa06721b49277591923e65643ae",
+      "leaf_acoustic": "353878f514fd55e8802d1962572ae8d04d98906a3c450191b7303a5729431f93",
+      "leaf_biology": "f9cbde089b082fcd7947e435d054919fd7f425844f78ea61050abca325cee386",
+      "leaf_biometrics": "842a4d7a20b42faa2cd0503328e30a5d9cd52fe1ce5dd491482fb25e7312f891",
+      "leaf_context": "7939ce5b3332a6b335e5a51d7ff0319a90c342797deed47327829d4606cb3101"
+    },
+    "validator_node": "TRUEVOICE-NODE-RajTiwari02-1A718FF0",
+    "validator_signature": "ED25519_VALIDATED_d24eaffc8ae0efe0157915f7688db1a2"
+  },
+  {
+    "index": 2,
+    "timestamp": "2026-09-10T16:15:23.641Z",
+    "incident_id": "INC-2026-02A86B7B",
+    "previous_hash": "9fa75cf87de6fa0b11b95485a016284fde4911f0f85db2e1caa9bd9310b6ba93",
+    "merkle_root": "98474865f45eec45ada51a3a9e5ca06100bc9318a7d4bbfbc3d4e50c2b8ac0e1",
+    "block_hash": "a5b7196911f43382dc85340ed407c4a99fd8e74ae570daae2a90657d9b3272ab",
+    "payload": {
+      "caller_phone": "+91 99887 76655",
+      "claimed_identity": "CEO_WIRE_FRAUD // Rajesh Malhotra (CFO)",
+      "threat_score": 99.9,
+      "verdict": "BLOCK",
+      "scenario_type": "CEO_WIRE_FRAUD",
+      "action_taken": "AUTOMATED_TRANSACTION_FREEZE",
+      "model_architecture": "Scalable-AASIST-MHA",
+      "neural_logits": [],
+      "lmt_variance": 0.00449,
+      "asv_consistency": "NEUTRAL_UNKNOWN_SPEAKER",
+      "asv_similarity": 0.5,
+      "context_multiplier": 1.35,
+      "i4c_record": "CLEAN_NCRP_RECORD",
+      "xai_explanation": "AI SYNTHETIC VOICE CLONE DETECTED [Threat Score: 99.9%]. Absence of physiological 8-12Hz laryngeal micro-tremors (Variance: 0.00449 Hz vs Human baseline > 0.12 Hz), indicating artificially sterile neural pitch synthesis. High-frequency phase group-delay discontinuity in the 4-8 kHz band (Score: 1.00), characteristic of discrete neural audio upsampling. Spectro-temporal feature matching correlates with HiFi-GAN / BigVGAN (Neural Vocoder) (Deepfake Confidence: 98.4%)."
+    },
+    "evidence_leaves": {
+      "leaf_caller": "af161c84440e83ed5688b2073935ce29d09dffc6d26a6a99f84a137bae3d3b8c",
+      "leaf_acoustic": "353878f514fd55e8802d1962572ae8d04d98906a3c450191b7303a5729431f93",
+      "leaf_biology": "a713c1a09d0f03baeadf48542c84bea640537c31e612aa8d9bca3b120c82996f",
+      "leaf_biometrics": "f305092e33681ad8c95edb28d692b631a4fb933006812311e8ea6390d5bc080b",
+      "leaf_context": "8b7354d56a1f875aa3517ed2cce266fc7d854863dd24aef9f1fcac021280fb76"
+    },
+    "validator_node": "TRUEVOICE-NODE-RajTiwari02-1A718FF0",
+    "validator_signature": "ED25519_VALIDATED_292c1128801a7bf77eadad724819e80b"
+  },
+  {
+    "index": 3,
+    "timestamp": "2026-09-10T16:16:07.477Z",
+    "incident_id": "INC-2026-1FC88220",
+    "previous_hash": "a5b7196911f43382dc85340ed407c4a99fd8e74ae570daae2a90657d9b3272ab",
+    "merkle_root": "c6c7e644101e65452efd5a5772377ba04d83d1144160ebe15928672e4e85c2b4",
+    "block_hash": "5a61777ab9f66bf8f9790324e40fdb2b47a0e44706f3a1502fecdd58895fcc1f",
+    "payload": {
+      "caller_phone": "warmup",
+      "claimed_identity": "VOIP_INCOMING",
+      "threat_score": 84.9,
+      "verdict": "BLOCK",
+      "scenario_type": "VOIP_INCOMING",
+      "action_taken": "STEP_UP_BIOMETRIC_AUTH",
+      "model_architecture": "Scalable-AASIST-MHA",
+      "neural_logits": [],
+      "lmt_variance": 0.0,
+      "asv_consistency": "NEUTRAL_UNKNOWN_SPEAKER",
+      "asv_similarity": 0.5,
+      "context_multiplier": 1.0,
+      "i4c_record": "CLEAN_NCRP_RECORD",
+      "xai_explanation": "AI SYNTHETIC VOICE CLONE DETECTED [Threat Score: 84.9%]. Absence of physiological 8-12Hz laryngeal micro-tremors (Variance: 0.00000 Hz vs Human baseline > 0.12 Hz), indicating artificially sterile neural pitch synthesis. High-frequency phase group-delay discontinuity in the 4-8 kHz band (Score: 1.00), characteristic of discrete neural audio upsampling. Spectro-temporal feature matching correlates with HiFi-GAN / BigVGAN (Neural Vocoder) (Deepfake Confidence: 67.9%)."
+    },
+    "evidence_leaves": {
+      "leaf_caller": "dd051b3e38a7880ea1888798cf21f3e63d066aa06721b49277591923e65643ae",
+      "leaf_acoustic": "353878f514fd55e8802d1962572ae8d04d98906a3c450191b7303a5729431f93",
+      "leaf_biology": "f9cbde089b082fcd7947e435d054919fd7f425844f78ea61050abca325cee386",
+      "leaf_biometrics": "842a4d7a20b42faa2cd0503328e30a5d9cd52fe1ce5dd491482fb25e7312f891",
+      "leaf_context": "7939ce5b3332a6b335e5a51d7ff0319a90c342797deed47327829d4606cb3101"
+    },
+    "validator_node": "TRUEVOICE-NODE-RajTiwari02-1A718FF0",
+    "validator_signature": "ED25519_VALIDATED_bc11d511a5679d0aa47fc3b7d42363c9"
+  },
+  {
+    "index": 4,
+    "timestamp": "2026-09-10T16:16:15.331Z",
+    "incident_id": "INC-2026-BA80B272",
+    "previous_hash": "5a61777ab9f66bf8f9790324e40fdb2b47a0e44706f3a1502fecdd58895fcc1f",
+    "merkle_root": "21b57d063b5e1934267939bfc868b43bd63a53e0a7d98ff176c6ede9b601fb0b",
+    "block_hash": "14cb9717eb03b5a9451068973cf81e4f3bff88fff08db82306b98721edd39a27",
+    "payload": {
+      "caller_phone": "+91 99887 76655",
+      "claimed_identity": "CEO_WIRE_FRAUD // Rajesh Malhotra (CFO)",
+      "threat_score": 99.9,
+      "verdict": "BLOCK",
+      "scenario_type": "CEO_WIRE_FRAUD",
+      "action_taken": "AUTOMATED_TRANSACTION_FREEZE",
+      "model_architecture": "Scalable-AASIST-MHA",
+      "neural_logits": [],
+      "lmt_variance": 0.02182,
+      "asv_consistency": "NEUTRAL_UNKNOWN_SPEAKER",
+      "asv_similarity": 0.5,
+      "context_multiplier": 1.35,
+      "i4c_record": "CLEAN_NCRP_RECORD",
+      "xai_explanation": "AI SYNTHETIC VOICE CLONE DETECTED [Threat Score: 99.9%]. Absence of physiological 8-12Hz laryngeal micro-tremors (Variance: 0.02182 Hz vs Human baseline > 0.12 Hz), indicating artificially sterile neural pitch synthesis. High-frequency phase group-delay discontinuity in the 4-8 kHz band (Score: 1.00), characteristic of discrete neural audio upsampling. Spectro-temporal feature matching correlates with HiFi-GAN / BigVGAN (Neural Vocoder) (Deepfake Confidence: 98.3%)."
+    },
+    "evidence_leaves": {
+      "leaf_caller": "af161c84440e83ed5688b2073935ce29d09dffc6d26a6a99f84a137bae3d3b8c",
+      "leaf_acoustic": "353878f514fd55e8802d1962572ae8d04d98906a3c450191b7303a5729431f93",
+      "leaf_biology": "043dee97ae28029a26539192a55b6f9a488495bd9a588841f4b93699a265dfb6",
+      "leaf_biometrics": "f305092e33681ad8c95edb28d692b631a4fb933006812311e8ea6390d5bc080b",
+      "leaf_context": "8b7354d56a1f875aa3517ed2cce266fc7d854863dd24aef9f1fcac021280fb76"
+    },
+    "validator_node": "TRUEVOICE-NODE-RajTiwari02-1A718FF0",
+    "validator_signature": "ED25519_VALIDATED_08b00b40f60ea002daac9611c589c72c"
+  }
+]

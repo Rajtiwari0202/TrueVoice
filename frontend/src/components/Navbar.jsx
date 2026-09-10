@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { 
   Mic, Activity, Zap, FileSearch, ShieldAlert, BarChart2, BookOpen, 
-  Lock, Wifi, Eye, Menu, X, ArrowRight, ShieldCheck, Terminal
+  Lock, Wifi, Eye, Menu, X, ArrowRight, ShieldCheck, Terminal, Link2
 } from 'lucide-react';
 
 export default function Navbar({ isConnected, stats }) {
@@ -16,6 +16,7 @@ export default function Navbar({ isConnected, stats }) {
     { to: '/codecs', label: 'Codec Studio', icon: Wifi },
     { to: '/simulator', label: 'Attack Sim', icon: Zap },
     { to: '/banking', label: 'Banking Guard', icon: Lock },
+    { to: '/ledger', label: 'Blockchain & DPDP', icon: Link2 },
     { to: '/forensics', label: 'Forensics', icon: FileSearch },
     { to: '/telemetry', label: 'Telemetry', icon: BarChart2 },
     { to: '/specs', label: 'Specs', icon: BookOpen },

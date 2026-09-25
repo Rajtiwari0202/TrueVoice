@@ -6,7 +6,7 @@ This document details how the scientific findings, mathematical models, and empi
 
 ## 1. Paper-by-Paper Scientific Mapping
 
-### 1.1 `AASISTResearchPaper.pdf` & `ScalableAASIST.pdf`
+### 1.1 [`Scalable_AASIST_MHA_Viakhirev2025.pdf`](research/core_deepfake_models/Scalable_AASIST_MHA_Viakhirev2025.pdf) & [`ScalableAASIST_Engineering_Report.pdf`](research/technical_specifications/ScalableAASIST_Engineering_Report.pdf)
 * **Authors:** Viakhirev et al. (July 2025) / Jung et al. (2022)
 * **Title:** *Towards Scalable AASIST: Refining Graph Attention for Speech Deepfake Detection*
 * **Core Scientific Contribution:**
@@ -17,7 +17,7 @@ This document details how the scientific findings, mathematical models, and empi
 
 ---
 
-### 1.2 `RawBoostResearchPaper.pdf`
+### 1.2 [`RawBoost_DataAugmentation_Tak2022.pdf`](research/core_deepfake_models/RawBoost_DataAugmentation_Tak2022.pdf)
 * **Authors:** Tak, Kamble, Patino, Todisco, Evans (EURECOM, ICASSP 2022)
 * **Title:** *RawBoost: A Raw Data Boosting and Augmentation Method Applied to Automatic Speaker Verification Anti-Spoofing*
 * **Core Scientific Contribution:**
@@ -29,7 +29,7 @@ This document details how the scientific findings, mathematical models, and empi
 
 ---
 
-### 1.3 `MultiGranularityAttentionFrameworkResearch.pdf` & `BenchmarkingResearchPaper.pdf`
+### 1.3 [`Telephony_Degradation_Benchmarking_Shi2025.pdf`](research/core_deepfake_models/Telephony_Degradation_Benchmarking_Shi2025.pdf)
 * **Authors:** Shi, Shi, Dogan, Huang, Zhang (Loughborough University London & University of Exeter, August 2025)
 * **Title:** *Multi-Granularity Adaptive Time-Frequency Attention Framework for Audio Deepfake Detection under Real-World Communication Degradations*
 * **Core Scientific Contribution:**
@@ -46,7 +46,7 @@ This document details how the scientific findings, mathematical models, and empi
 
 ---
 
-### 1.4 `voice-cloning-detection-report.pdf` (Enterprise PRD & Technical Spec)
+### 1.4 [`VoiceCloning_Detection_PRD_Report.pdf`](research/technical_specifications/VoiceCloning_Detection_PRD_Report.pdf) (Enterprise PRD & Technical Spec)
 * **Target:** Multi-Layered Hybrid Solution for English & Hindi RTC Telephony
 * **Core Scientific Contribution:**
   1. **MagicNet VAD:** Lightweight causal Voice Activity Detection ($22.7\text{K}$ parameters) suppressing database silence bias.
@@ -59,9 +59,13 @@ This document details how the scientific findings, mathematical models, and empi
 
 ---
 
-### 1.5 `AudioDeepfakeResearchPaper.pdf`
-* **Authors:** Yi et al. (IEEE Transactions, August 2023)
-* **Title:** *Audio Deepfake Detection: A Survey*
+### 1.5 Primary Presentation References
+See complete bibliography and slide-to-code mapping in [`docs/research/REFERENCES.md`](research/REFERENCES.md).
+* **[1] RawNet2 Anti-Spoofing** (Tak et al., ICASSP 2021): [`01_RawNet2_AntiSpoofing_Tak2021.pdf`](research/primary_references/01_RawNet2_AntiSpoofing_Tak2021.pdf)
+* **[2] DenseNet-BiLSTM Replay & Prosody** (Huang & Pun, IEEE/ACM TASLP 2020)
+* **[3] Voiceprint Construction via Dynamic Attention** (Ding et al., ICCCBDA 2025)
+* **[4] Joint ASV & Prosody Analysis** (Attorresi et al., ICPR 2022 / Springer 2023)
+* **[5] Robust Prosody Modeling** (Cohen et al., Speech Communication 2025)
 * **Core Scientific Contribution:**
   1. Taxonomy of deepfake generation: TTS, Voice Conversion (VC), Emotion Fake, Scene Fake, Partially Fake.
   2. Comprehensive feature categorization: Short-term spectral (LFCC, IMFCC, MGDCC), Long-term (CQT, CQTMGD), Prosodic (F0, Jitter, Shimmer, Duration), and Deep SSL embeddings.
